@@ -1,0 +1,126 @@
+** --------------------------------
+** My Camera sound information file
+** last update : 2002.05.24
+** English version
+** --------------------------------
+
+**Number of Camera Models
+1
+
+
+** My Camera Information Start
+    ** Camera Model Name
+    default setting
+    ** Number of Sounds
+    4
+    ** Sound Information Start
+        ** Sound name
+        起动声音
+        ** File name
+        _SS01.WAV
+        ** Folder name
+        SS_WAV
+        ** Number of Sound Format
+        2
+        ** Sound Format Start
+            ** Second
+            1.00
+            ** Frequency
+            11.025
+            ** Bits
+            8
+            ** Monoral_Strero
+            Monoral
+        ** Sound Format End
+        ** Sound Format Start
+            ** Second
+            1.20
+            ** Frequency
+            8.000
+            ** Bits
+            8
+            ** Monoral_Strero
+            Monoral
+        ** Sound Format End
+    ** Sound Information End
+    ** Sound Information Start
+        ** Sound name
+        快门声音
+        ** File name
+        _RL01.WAV
+        ** Folder name
+        RL_WAV
+        ** Number of Sound Format
+        2
+        ** Sound Format Start
+            ** Second
+            0.30
+            ** Frequency
+            11.025
+            ** Bits
+            8
+            ** Monoral_Strero
+            Monoral
+        ** Sound Format End
+        ** Sound Format Start
+            ** Second
+            0.40
+            ** Frequency
+            8.000
+            ** Bits
+            8
+            ** Monoral_Strero
+            Monoral
+        ** Sound Format End
+    ** Sound Information End
+    ** Sound Information Start
+        ** Sound name
+        操作声音
+        ** File name
+        _OP01.WAV
+        ** Folder name
+        OP_WAV
+        ** Number of Sound Format
+        2
+        ** Sound Format Start
+            ** Second
+            0.30
+            ** Frequency
+            11.025
+            ** Bits
+            8
+            ** Monoral_Strero
+            Monoral
+        ** Sound Format End
+        ** Sound Format Start
+            ** Second
+            0.40
+            ** Frequency
+            8.000
+            ** Bits
+            8
+            ** Monoral_Strero
+            Monoral
+        ** Sound Format End
+    ** Sound Information End
+    ** Sound Information Start
+        ** Sound name
+        自拍机声音
+        ** File name
+        _TM01.WAV
+        ** Folder name
+        TM_WAV
+        ** Number of Sound Format
+        1
+        ** Sound Format Start
+            ** Second
+            2.00
+            ** Frequency
+            11.025
+            ** Bits
+            8
+            ** Monoral_Strero
+            Monoral
+        ** Sound Format End
+    ** Sound Information End
+** My Camera Information End

@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<html>
+  <head>
+    <title>Actipro SyntaxEditor Document Text</title>
+  </head>
+  <body>
+    <pre><!--
+
+Code highlighting produced by Actipro SyntaxEditor
+http://www.ActiproSoftware.com/Products/DotNet/
+
+--><span style="color: #008000; ">#</span><span style="color: #008000; "> EXAMPLE PROGRAM</span><span style="color: #008000; ">
+#</span><span style="color: #008000; "> Computes Factorials</span><span style="color: #008000; ">
+#</span><span style="color: #008000; "> The factorial of 5 is 120 because 5 * 4 * 3 * 2 * 1 = 120</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">
+        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">text</span><span style="color: #000000; ">
+
+</span><span style="color: #FF0000; font-weight: bold; ">fact:</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> ALLOCATE A FRAME FOR THE DYNAMIC LINK, RETURN ADDRESS,</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> AND STATIC LINK (TOTAL: 3*4 = 12 BYTES)</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">, (</span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">)        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> PUSH OLD FRAME POINTER (DYNAMIC LINK)</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">move</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> FRAME        POINTER NOW POINTS TO THE TOP OF STACK</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">subu</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #000000; ">12</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> ALLOCATE TWELVE BYTES IN THE STACK</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> SAVE RETURN ADDRESS IN FRAME</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$ra</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">4</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> SAVE STATIC LINK IN FRAME</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">8</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> IF n&gt;0 GOTO recurs (THE ARGUMENT n IS LOCATED AT 4($fp))</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">4</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        </span><span style="color: #0000FF; font-weight: bold; ">bgt</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">1</span><span style="color: #000000; ">, recurs
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> OTHERWISE RETURN 1</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">li</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">1</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">b</span><span style="color: #000000; ">        return
+        
+</span><span style="color: #FF0000; font-weight: bold; ">recurs:</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> PUSH n-1 AS THE ARGUMENT TO fact</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">4</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        </span><span style="color: #0000FF; font-weight: bold; ">subu</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">1</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, (</span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">)
+        </span><span style="color: #0000FF; font-weight: bold; ">subu</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #000000; ">4</span><span style="color: #000000; ">
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> LOAD STATIC LINK</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">8</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> CALL fact</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">jal</span><span style="color: #000000; ">        fact
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> MULTIPLY THE RESULT OF fact(n-1) BY n</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">4</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        </span><span style="color: #0000FF; font-weight: bold; ">mul</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">
+
+</span><span style="color: #FF0000; font-weight: bold; ">return:</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> RETURN FROM fact (RESTORE REGISTERS AND POP FRAME)</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$ra</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">4</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        </span><span style="color: #0000FF; font-weight: bold; ">move</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">, (</span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">)        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> RESTORE OLD FRAME POINTER</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">jr</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$ra</span><span style="color: #000000; ">
+
+</span><span style="color: #008000; ">#</span><span style="color: #008000; "> The main program</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">text</span><span style="color: #000000; ">
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> main MUST BE GLOBAL</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">globl</span><span style="color: #000000; ">        main        
+</span><span style="color: #FF0000; font-weight: bold; ">main:</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> ALLOCATE A FRAME FOR THE DYNAMIC LINK, RETURN ADDRESS, STATIC LINK,</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> AND FOR THE INTEGERS i AND res (TOTAL: 5*4 = 20 BYTES)</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">, (</span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">)        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> PUSH OLD FRAME POINTER (DYNAMIC LINK)</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">move</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> FRAME        POINTER NOW POINTS TO THE TOP OF STACK</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">subu</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #000000; ">20</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> ALLOCATE TWENTY BYTES IN THE STACK</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> SAVE RETURN ADDRESS IN FRAME</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$ra</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">4</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> SAVE STATIC LINK IN FRAME</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">8</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        
+</span><span style="color: #FF0000; font-weight: bold; ">loop:</span><span style="color: #000000; ">        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> PRINT prompt</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">data</span><span style="color: #000000; ">
+</span><span style="color: #FF0000; font-weight: bold; ">prompt:</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">asciiz</span><span style="color: #000000; ">        </span><span style="color: #00008B; ">"</span><span style="color: #00008B; ">Number? "</span><span style="color: #00008B; ">
+</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">text</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">li</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">4</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">la</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, prompt
+        </span><span style="color: #0000FF; font-weight: bold; ">syscall</span><span style="color: #000000; ">
+        
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> READ i (i IS LOCATED AT -12($fp))</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">li</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">5</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">syscall</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">12</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> IF i&lt;=0 GOTO EXIT</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">blez</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #0000FF; font-weight: bold; ">exit</span><span style="color: #000000; ">
+        
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> PUSH i</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">12</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, (</span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">)
+        </span><span style="color: #0000FF; font-weight: bold; ">subu</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #000000; ">4</span><span style="color: #000000; ">
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> THE STATIC LINK OF fact IS THE FRAME POINTER OF main</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">move</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> CALL fact        </span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">jal</span><span style="color: #000000; ">        fact
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> STORE THE RESULT OF fact(i) INTO res (res IS LOCATED AT -16($fp))</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">sw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">16</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> PRINT answer</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">data</span><span style="color: #000000; ">
+</span><span style="color: #FF0000; font-weight: bold; ">answer:</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">asciiz</span><span style="color: #000000; "> </span><span style="color: #00008B; ">"</span><span style="color: #00008B; ">The factorial is: "</span><span style="color: #00008B; ">
+</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">text</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">li</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">4</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">la</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, answer
+        </span><span style="color: #0000FF; font-weight: bold; ">syscall</span><span style="color: #000000; ">
+        
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> PRINT res</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">li</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">1</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">16</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        </span><span style="color: #0000FF; font-weight: bold; ">syscall</span><span style="color: #000000; ">
+        
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> PRINT END OF LINE</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">data</span><span style="color: #000000; ">
+</span><span style="color: #FF0000; font-weight: bold; ">endl:</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">asciiz</span><span style="color: #000000; "> </span><span style="color: #00008B; ">"</span><span style="color: #00008B; ">\n"</span><span style="color: #00008B; ">
+</span><span style="color: #000000; ">        </span><span style="color: #CC00CC; font-weight: bold; ">.</span><span style="color: #CC00CC; font-weight: bold; ">text</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">li</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$v0</span><span style="color: #000000; ">, </span><span style="color: #000000; ">4</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">la</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$a0</span><span style="color: #000000; ">, endl
+        </span><span style="color: #0000FF; font-weight: bold; ">syscall</span><span style="color: #000000; ">
+
+        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> LOOP BACK</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">b</span><span style="color: #000000; ">        loop
+        
+</span><span style="color: #0000FF; font-weight: bold; ">exit</span><span style="color: #000000; ">:        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> RETURN FROM main (RESTORE REGISTERS AND POP FRAME)</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$ra</span><span style="color: #000000; ">, -</span><span style="color: #000000; ">4</span><span style="color: #000000; ">(</span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">)
+        </span><span style="color: #0000FF; font-weight: bold; ">move</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">, </span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">
+        </span><span style="color: #0000FF; font-weight: bold; ">lw</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$fp</span><span style="color: #000000; ">, (</span><span style="color: #800000; ">$sp</span><span style="color: #000000; ">)        </span><span style="color: #008000; ">#</span><span style="color: #008000; "> RESTORE OLD FRAME POINTER</span><span style="color: #008000; ">
+</span><span style="color: #000000; ">        </span><span style="color: #0000FF; font-weight: bold; ">jr</span><span style="color: #000000; ">        </span><span style="color: #800000; ">$ra</span><span style="color: #000000; ">
+
+</span></pre>
+  </body>
+</html>

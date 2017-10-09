@@ -1,0 +1,14 @@
+------Cdbsoft MIPS Studio 2010: 日志------
+====Cdbsoft MIPS Studio 2010 : Log - 启动生成  [2010-06-11 22:28:21]====
+源文件：D:\MIPSter 2.0\Examples\HelloWorld.s
+====Cdbsoft MIPS Studio 2010 : Log - 开始汇编程序  [2010-06-11 22:28:21]====
+正在汇编: .data		...     失败：非法指令。
+正在汇编: out_string: .asciiz "\nHello, World!\n"...     失败：非法指令。
+正在汇编: .text...     失败：非法指令。
+正在汇编: li $v0, 4		...     失败：非法指令。
+正在汇编: la $a0, out_string	...     失败：非法指令。
+正在汇编: syscall			...     成功。
+汇编结果：失败！
+====Cdbsoft MIPS Studio 2010 : Log - 完成汇编程序  [2010-06-11 22:28:21]====
+无法生成目标文件：D:\MIPSter 2.0\Examples\obj\HelloWorld.obj
+====Cdbsoft MIPS Studio 2010 : Log - 生成失败  [2010-06-11 22:28:21]====
