@@ -1,0 +1,67 @@
+EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
+ 
+thermo.bin_ -- emu8086 assembler version: 4.08  
+ 
+[ 2017/9/29 ÐÇÆÚÎå  --  ÏÂÎç 9:39:01 ] 
+ 
+===================================================================================================
+[LINE]     LOC: MACHINE CODE                          SOURCE
+===================================================================================================
+ 
+[   1]        :                                       ; this short program for emu8086 shows how to keep constant temperature
+[   2]        :                                       ; using heater and thermometer (between 60?to 80?,
+[   3]        :                                       ; it is assumed that air temperature is lower 60?
+[   4]        :                                       
+[   5]        :                                       ; thermometer.exe is started automatically from c:\emu8086\devices.
+[   6]        :                                       ; it is also accessible from the "virtual devices" menu of the emulator.
+[   7]        :                                       
+[   8]        :                                       #start=thermometer.exe#
+[   9]        :                                       
+[  10]        :                                       ; temperature rises fast, thus emulator should be set to run at the maximum speed.
+[  11]        :                                       
+[  12]        :                                       ; if closed, the thermometer window can be re-opened from emulator's "virtual devices" menu.
+[  13]        :                                       
+[  14]        :                                       
+[  15]        :                                       
+[  16]        :                                       #make_bin#
+[  17]        :                                       
+[  18]        :                                       name "thermo"
+[  19]        :                                       
+[  20]        :                                       ; set data segment to code segment:
+[  21]    0000: 8C C8                                 mov ax, cs
+[  22]    0002: 8E D8                                 mov ds, ax
+[  23]        :                                       
+[  24]    0004:                                       start:
+[  25]        :                                       
+[  26]    0004: E4 7D                                 in al, 125
+[  27]        :                                       
+[  28]    0006: 3C 3C                                 cmp al, 60
+[  29]    0008: 7C 06                                 jl  low
+[  30]        :                                       
+[  31]    000A: 3C 50                                 cmp al, 80
+[  32]    000C: 7E 0C                                 jle  ok
+[  33]    000E: 7F 06                                 jg   high
+[  34]        :                                       
+[  35]    0010:                                       low:
+[  36]    0010: B0 01                                 mov al, 1
+[  37]    0012: E6 7F                                 out 127, al   ; turn heater "on".
+[  38]    0014: EB 04                                 jmp ok
+[  39]        :                                       
+[  40]    0016:                                       high:
+[  41]    0016: B0 00                                 mov al, 0
+[  42]    0018: E6 7F                                 out 127, al   ; turn heater "off".
+[  43]        :                                       
+[  44]    001A:                                       ok:
+[  45]    001A: EB E8                                 jmp start   ; endless loop.
+[  46]        :                                       
+[  47]        :                                       
+[  48]        :                                       
+[  49]        :                                       
+ 
+===================================================================================================
+ 
+
+
+
+
+===================================================================================================

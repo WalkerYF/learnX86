@@ -1,0 +1,28 @@
+; multi-segment executable file template.
+
+data segment
+A DB 10
+BLOCK DB -10,15H,20H,-1,-23,46H,16H,-33,65H,88H
+ends
+
+code segment
+ASSUME DS:DATA, CS:CODE
+START: MOV AX, DATA
+MOV DS, AX
+MOV SI, OFFSET BLOCK
+MOV CX, 10
+AGAIN: MOV AL, [SI]
+TEST AL, 80H ;测试是否为正数
+JZ NEXT
+NEG AL ;求负数的绝对值
+MOV [SI], AL
+NEXT: INC SI
+LOOP AGAIN
+MOV AH, 4CH ;返回DOS
+INT 21H
+CODE ENDS
+END START
+
+
+
+; [SOURCE]: C:\Users\Administrator\Desktop\mycode.asm

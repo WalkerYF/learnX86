@@ -1,0 +1,40 @@
+; 建立 BOOT 文件的指令e:
+#MAKE_BOOT#
+
+; 启动区要求读入到 0000:7C00,
+; 通知编译器
+ORG 7C00h
+
+; 将信息地址存入 SI 寄存器:
+LEA SI, msg
+
+; teletype function id:
+MOV AH, 0Eh
+
+print:   MOV AL, [SI]
+CMP AL, 0
+JZ done
+INT 10h   ; print using teletype.
+INC SI
+JMP print
+
+; 等待任意键按下
+done:      MOV AH, 0
+INT 16h
+
+
+; store magic value at 0040h:0072h:
+;   0000h - cold boot.
+;   1234h - warm boot.
+MOV     AX, 0040h
+MOV     DS, AX
+MOV     w.[0072h], 0000h ; cold boot.
+
+JMP    0FFFFh:0000h     ; reboot!
+
+
+new_line EQU 13, 10
+
+msg DB  'Hello This is My First Boot Program!'
+DB  new_line, 'Press any key to reboot', 0
+
