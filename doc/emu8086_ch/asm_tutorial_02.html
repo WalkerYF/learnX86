@@ -1,0 +1,350 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 2)</TITLE>
+
+<META name="description" content="Memory Access using 8086 Assembler">
+
+<META name="keywords" content="memory access, 8086, tutorial, programming, assembler tutorial, tutorial for begginers">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+
+<FONT SIZE=+1 FACE="Verdana">
+<B>8086汇编语言初学者教程（第二部分）</B></FONT><FONT FACE="Verdana" SIZE=3><BR><BR>
+
+<FONT SIZE=+2><B>寻址方式</B></FONT>
+
+</FONT>
+
+
+<p>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+我们可以通过下面的四个寄存器来寻址 <B>BX, SI, DI, BP</B>.<BR>
+　</FONT></p>
+<p>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+通过计算[]符号中的值,我们可以访问到不同内存单元的值。具体组合</FONT></p>
+<p><font face="Verdana">请看下表：</font><FONT FACE="Verdana" SIZE=3><FONT FACE="Fixedsys"></p>
+
+<TABLE BORDER=1 COLS=3 CELLPADDING=10>
+<TR>
+
+<TD>
+[BX + SI]<BR>
+[BX + DI]<BR>
+[BP + SI]<BR>
+[BP + DI]<BR>
+</TD>
+
+<TD>
+[SI]<BR>
+[DI]<BR>
+d16 (variable offset only)<BR>
+[BX]<BR>
+</TD>
+
+<TD>
+[BX + SI] + d8<BR>
+[BX + DI] + d8<BR>
+[BP + SI] + d8<BR>
+[BP + DI] + d8<BR>
+</TD>
+
+</TR>
+
+<TR>
+
+<TD>
+[SI] + d8<BR>
+[DI] + d8<BR>
+[BP] + d8<BR>
+[BX] + d8<BR>
+</TD>
+
+<TD>
+[BX + SI] + d16<BR>
+[BX + DI] + d16<BR>
+[BP + SI] + d16<BR>
+[BP + DI] + d16<BR>
+</TD>
+
+<TD>
+[SI] + d16<BR>
+[DI] + d16<BR>
+[BP] + d16<BR>
+[BX] + d16<BR>
+</TD>
+
+</TR>
+</TABLE>
+
+</FONT>
+
+<BR>
+
+<B>d8</B> - 表示８位偏移量<BR><BR>
+
+<B>d16</B> - 表示１６位偏移量<BR>　<p>偏移量可以是一个立即数或者是一个变量的偏移，或者二者兼备。</p>
+<p>这取决于编译器如何计算单独的立即数。<BR>
+
+<BR>偏移量可以在［］符号里面或者外面，这不影响编译器生成相同的</p>
+<p>机器码。<br>
+<br>
+偏移量是一个有符号数，可以是正数或者负数。<br>
+<br>
+一般说来，8位或者16位，对于编译后的结果是有影响的。</p>
+<p><BR>
+
+例如，假定 <B>DS = 100</B>, <B>BX = 30</B>, <B>SI = 70。</B><br>
+<br>
+如下寻址方式
+<B>[BX + SI] + 25</B> 计算物理地址为<br>
+<br>
+<NOBR><B>100 * 16 + 30 + 70 + 25 = 1725</B></NOBR><BR>　</p>
+<p>默认下，<B>DS</B> 寄存器应用在除了<B>BP</B>寄存器之外的所有物理</p>
+<p>地址计算中，寄存器是和<B>SS</B>寄存器一起工作的。<br>
+<br>
+用过下面的表，你可以和轻松记住谁和谁是关联在一起使用的。<BR>
+<BR>
+<IMG SRC="addressing_mode.gif" width="165" height="76"> </p>
+<p>上表中，你可以从每一列中选择一个或者忽略任意一个列。比如，<br>
+<br>
+可以看到，<B>BX</B> 和 <B>BP</B>始终不会选到一起。<B>SI</B> 和 <B>DI</B>不会选到一起。<br>
+<br>
+这是一个计算地址模式<B>[BX+5]</B></p>
+
+<HR>
+
+<BR>段寄存器(CS, DS, SS, ES) 中数值被称作 &quot;段偏移&quot; 。<br>
+<br>
+目的寄存器(BX, SI, DI, BP) 中数值被称作&quot;偏移量&quot;<p>比如,ds中数值为<b>1234h</b>，si中数值为<b>7890h</b>,可以记作 
+</p>
+<p><b>1234:7890</b>　物理地址为 1234h * 10h + 7890h = 19BD0h</p>
+
+<HR>
+
+在编译过程中使用如下声明数据类型<p><b>BYTE PTR</b> - 表示字节</p>
+<p><b>WORD PTR</b> - 表示字（2个字节）<br>
+<br>
+例如：<BR><BR>
+BYTE PTR [BX] ;按字节访问<br>
+or<br>
+WORD PTR [BX] ;按字访问<br>
+<br>
+Emu8086 容许使用如下更简洁的前缀<br>
+<br>
+b. - 等价于上面的 <b>BYTE PTR</b></p>
+<p><b>w. - 等价于上面的 WORD PTR</b><br>
+<br>
+有时，编译器可以自动计算出数据类型，但是如果一个参与运算<br>
+<br>
+的数是立即数，这种方法就不可靠了。<BR>　</p>
+
+<HR>
+
+
+
+<BR>
+
+<FONT SIZE=+2><B><U>MOV</U> </B></FONT>
+
+</FONT>
+
+
+<b>
+
+
+<FONT FACE="Verdana" SIZE=+2>
+
+
+
+指令</FONT></b><FONT FACE="Verdana" SIZE=3>
+
+
+
+<BR><BR>
+
+<UL>
+
+	<LI>
+	将<b>第二个操作数</b>（源）拷贝到<b>第一个操作数</b>（目的）指定位值<BR><BR>
+	</LI>
+
+	<LI>
+	源操作数可以是立即数，通用寄存器或者内存单元<BR><BR>
+	</LI>
+
+	<LI>
+	目的寄存器可以是通用寄存器或者内存单元<BR><BR>
+	</LI>
+
+	<LI>
+	源和目的必须是同样大小，要么都是字节要么都是字</LI>
+</UL>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=100%><TR><TD>
+
+操作类型如下:<BR>
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+	MOV REG, memory<BR>
+	MOV memory, REG<BR>
+	MOV REG, REG<BR>
+	MOV memory, immediate<BR>
+	MOV REG, immediate
+</FONT>
+</BLOCKQUOTE>
+
+<B>REG</B>:<FONT SIZE=-1> AX, BX, CX, DX, AH, AL, BL, BH, CH, CL, DH, DL, DI, SI, BP, SP.</FONT><BR><BR>
+<B>memory</B>: [BX], [BX+SI+7],变量, 等等<BR><BR>
+<B>immediate</B>: 5, -24, 3Fh, 10001101b, 等等.<BR><BR>
+
+</TD></TR></TABLE>
+
+<BR>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=100%><TR><TD>
+
+<b>mov　</b>指令只支持如下段寄存器：<BR><BR>
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+	MOV SREG, memory<BR>
+	MOV memory, SREG<BR>
+	MOV REG, SREG<BR>
+	MOV SREG, REG<BR>
+</FONT>
+</BLOCKQUOTE>
+
+<B>SREG</B>: DS, ES, SS, 注意 CS 只能作操作源<BR><BR>
+<B>REG</B>:<FONT SIZE=-1> AX, BX, CX, DX, AH, AL, BL, BH, CH, CL, DH, DL, DI, SI, BP, SP.</FONT><BR><BR>
+<B>memory</B>: [BX], [BX+SI+7], variable, 等等<BR><BR>
+
+</TD></TR></TABLE>
+
+<BR>
+<b>MOV</b>指令不能用来设置<b>CS</b>和<b>IP</b>寄存器的值。<TABLE BORDER=1 CELLPADDING=10 WIDTH=100%><TR><TD>
+下面是一个使用 <B>MOV</B> 指令的例子:<BR>
+<FONT FACE="Fixedsys"><br>
+#MAKE_COM#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　　 ;&nbsp; 表示，这个是一个com程序<br>
+ORG 100h&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　　　　 ;COM 程序必须的<br>
+MOV AX, 0B800h&nbsp;&nbsp;&nbsp; 　　; 将ax设置为 B800h.<br>
+MOV DS, AX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　　　;
+</FONT>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+将 AX 值拷贝到 DS.</FONT><FONT FACE="Fixedsys"><br>
+MOV CL, 'A'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　　　　;
+</FONT>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+将ASCII 码 'A'的值传送到cl,这个值是 41h.</FONT><FONT FACE="Fixedsys"><br>
+MOV CH, 01011111b 　　;
+</FONT>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+将ch设置为二进制的01011111b</FONT><FONT FACE="Fixedsys"><br>
+MOV BX, 15Eh&nbsp;&nbsp;&nbsp;&nbsp; 　　　 ;
+</FONT>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+&nbsp;将 BX 设置成 15Eh.</FONT><FONT FACE="Fixedsys"><br>
+MOV [BX], CX&nbsp;&nbsp;&nbsp; 　　&nbsp; ;
+</FONT>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+将 CX 放到 bx 指出的内存单元 B800:015E</FONT><FONT FACE="Fixedsys"><br>
+RET&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+　　　　　　&nbsp; ;
+</FONT>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+返回操作系统</FONT><FONT FACE="Fixedsys"><br>
+</FONT><br>
+</TD></TR></TABLE>
+
+<BR>你可以将上面的程序贴入Emu8086代码编辑器，接下来按下<br>
+<br>
+［complie and emulate]　(或者按F5)<br>
+<br>
+模拟窗口将显示这个程序已经调入，点击［single step］观察<br>
+<br>
+寄存器数值变化。<br>
+<BR>
+你可以猜到　&quot;;&quot;　表示注释，编译器忽略在&quot;;&quot;后面的一切<br>
+<br>
+程序结束后，你可以看到如下窗口<br>
+<BR>
+<IMG SRC="screen01.gif" width="426" height="174">
+
+<BR><BR>
+事实上，上面程序是将字符直接写入显示内存。<br>
+<br>
+通过上面的例子，你可以发现 <b>MOV</b>　指令是非常有用的。<BR><BR><BR>
+
+
+<HR>
+<CENTER>
+<A HREF="asm_tutorial_01.html"><B> &lt;&lt;&lt; 上一部分 &lt;&lt;&lt; </B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="asm_tutorial_03.html"><B> >>> 下一部分 >>> </B></A>
+</CENTER>
+<HR>
+
+
+<BR>
+
+</FONT>
+
+
+</TD></TR>
+</TABLE>
+
+
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,248 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 9)</TITLE>
+
+<META name="description" content="The Stack - Tutorial for Beginners">
+
+<META name="keywords" content="stack, 8086, tutorial, programming, assembler tutorial, tutorial for begginers">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+<FONT SIZE=+1>
+<B>8086 Assembler Tutorial for Beginners (Part 9)</B>
+</FONT>
+
+
+
+<BR><BR>
+
+<FONT SIZE=+2><B>堆栈</B></FONT>
+<BR><BR>
+
+<br>
+堆栈是内存中用于保存临时数据的一片区域.当使用<B>CALL</B>指令<br>
+<br>
+时，堆栈用于保存过程的返回地址，<B>RET</B>指令能够从堆栈中取得<br>
+<br>
+该地址并使程序返回到那里。当使用<B>INT</B>指令，发生的也与此类似。<br>
+<br>
+堆栈保存标志寄存器，代码段和偏移量。<B>IRET</B>指令用来从中断<br>
+<br>
+返回。</FONT><p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+<BR>
+我们同样可以使用堆栈保存任何数据。对于堆栈的<br>
+<br>
+操作只有两条：<br>
+<BR>
+
+<B>PUSH</B> - 将16位数值压入堆栈.<BR><BR>
+
+<B>POP</B> - 将16位数值从堆栈中弹出<BR><BR>
+
+</p>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=100%><TR><TD>
+
+<B>PUSH</B> 指令的使用方法:<BR><BR>
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+	PUSH REG<BR>
+	PUSH SREG<BR>
+	PUSH memory<BR>
+	PUSH immediate<BR>
+</FONT>
+</BLOCKQUOTE>
+
+<B>REG（寄存器）</B>: AX, BX, CX, DX, DI, SI, BP, SP.<BR><BR>
+<B>SREG（段寄存器）</B>: DS, ES, SS, CS.<BR><BR>
+<B>memory（内存）</B>: [BX], [BX+SI+7], 16 位变量, 等等...<BR><BR>
+<B>immediate（立即数）</B>: 5, -24, 3Fh, 10001101b,等等...<BR><BR>
+
+</TD></TR></TABLE>
+
+<BR>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=100%><TR><TD>
+
+<B>POP</B> 指令的使用方法:<BR><BR>
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+	POP REG<BR>
+	POP SREG<BR>
+	POP memory<BR>
+</FONT>
+</BLOCKQUOTE>
+
+<B>REG（寄存器）</B>: AX, BX, CX, DX, DI, SI, BP, SP.<BR><BR>
+<B>SREG（段寄存器）</B>: DS, ES, SS, (除了 CS).<BR><BR>
+<B>memory（内存）</B>: [BX], [BX+SI+7], 16位变量, 等等...<BR><BR>
+
+</TD></TR></TABLE>
+
+<BR><BR>
+注意：<UL>
+<LI><B>PUSH</B> and <B>POP</B> 都只操作16位数据!<BR><BR></LI>
+
+<LI>注意：在80186其极以后的CPU中才能使用 <B>PUSH</B> 立即数这样的指令<br>
+<br>
+堆栈使用<B>LIFO</B>（后进先出）算法，意思是：加入我们按照如下顺序压<br>
+<br>
+入数值：</LI>
+
+</UL>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<B>1, 2, 3, 4, 5</B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 再使用<b>POP</b>指令弹出，结果将是<b> 5 4 3 2 1</b><BR><BR>
+
+<IMG SRC="stack.gif" width="224" height="253">
+
+<BR><BR>
+
+注意，有多少条<B>PUSH</B>指令就要对应有多少条<B>POP</B>指令，否则堆栈会<br>
+<br>
+被占用，无法正确返回操作系统。前面讲过使用<B>RET</B>指令返回操作系统，<br>
+<br>
+所以在程序开始时会将返回地址压入堆栈（通常都是0000h）I<BR><BR>
+
+&nbsp;<B>PUSH </B>和<B> POP</B>指令在我们寄存器不够用的时侯特别有用，我们有<br>
+<br>
+如下技巧：</p>
+<UL>
+<LI>将寄存器原始数值存入堆栈（使用<B> PUSH</B>）<br>
+<BR></LI>
+<LI>使用寄存器<BR><BR></LI>
+<LI>从堆栈中弹出寄存器原先数值再放入寄存器（使用<B>POP</B>）</LI>
+</UL>
+
+下面是一个例子:
+<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+ORG    100h
+
+MOV    AX, 1234h
+PUSH   AX          ; 将 AX  存入堆栈.
+
+MOV    AX, 5678h   ; 修改 AX  值
+
+POP    AX          ;返回 AX 原先的值
+
+RET
+
+END</FONT></PRE>
+</TD></TR></TABLE>
+
+<BR><BR>
+堆栈的另外一个作用是交换数值，下面是一个这样的例子:<BR><BR>
+
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+ORG    100h
+
+MOV    AX, 1212h   ; 将 1212h 存入 AX.
+MOV    BX, 3434h   ; 将 3434h  存入 BX
+
+
+PUSH   AX          ; 将 AX  数值存入堆栈.
+PUSH   BX          ; 将 BX   数值存入堆栈
+
+POP    AX          ;   BX原值存入</FONT><FONT FACE="Fixedsys" SIZE="3">AX</FONT><FONT FACE="Fixedsys">
+POP    BX          ; </FONT><FONT FACE="Verdana" SIZE=3><FONT FACE="Fixedsys" SIZE="3">AX</FONT><FONT FACE="Fixedsys">原值存入BX</FONT></FONT><FONT FACE="Fixedsys">
+
+RET
+
+END</FONT></PRE>
+</TD></TR></TABLE>
+<BR>
+之所以能这样是因为堆栈是用<B>LIFO（后进先出）</B>算法，当我们压入<br>
+<br>
+<b>1212h</b>和<b>3434h</b>之后，使用pop弹出我们首先得到的是<br>
+<br>
+<b>3434h</b>然后才是<b>1212h</b><BR>
+
+<HR>
+
+<BR>
+堆栈的内存区域由<B>SS</B>寄存器（堆栈段），<B>SP</B>寄存器（栈指针）设置设置。<br>
+<br>
+一般来说操作系统在程序开始时会设置这些。<p>"<B>PUSH <i>源</i></B>&quot;&nbsp; 指令做如下工作：<BR>
+</p>
+<UL>
+<LI>将<B>SP</B>寄存器减 <B>2</B><BR><BR></LI>
+<LI>将<b>源</b>的值写入内存<B>SS:SP</B>地址处</LI>
+</UL>
+
+<BR>
+
+"<B>POP <i>目的</i></B>"&nbsp; 指令做如下工作:<BR>
+<UL>
+<LI>内存<B>SS:SP</B>地址处数值写入<b>目的<br>
+</b><BR></LI>
+<LI>将<B>SP</B>寄存器加<B>2</B> </LI>
+</UL>
+
+<BR>
+由 <B>SS:SP </B>指出的地址称作<b>堆栈顶</b><br>
+<BR>
+
+对于<B>COM</B>文件，堆栈段通常就是代码段，堆栈指针设置为<br>
+<br>
+<b>0FFFEh</b>.在地址<B>SS:0FFFEh</B>处存放程序结束时<B>RET</B>指令返回地址。<br>
+<br>
+你可以点击<b>[stack]</b>按钮直接观察堆栈操作。堆栈顶由“&lt;”符号标记。<BR>
+
+
+<BR><BR><BR>
+
+<HR>
+<CENTER>
+<A HREF="asm_tutorial_08.html"><B> &lt;&lt;&lt; 前一部分 &lt;&lt;&lt; </B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="asm_tutorial_10.html"><B> >>> 后一部分 >>> </B></A>
+</CENTER>
+<HR>
+
+
+
+<BR>
+
+</FONT>
+
+
+
+</TD></TR>
+</TABLE>
+
+
+</BODY>
+
+</HTML>

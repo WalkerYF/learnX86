@@ -1,0 +1,447 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 3)</TITLE>
+
+<META name="description" content="Variables - 8086 Assembler Tutorial for Beginners">
+
+<META name="keywords" content="variables, 8086, tutorial, programming, assembler tutorial, tutorial for begginers">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+
+<FONT SIZE=+1 FACE="Verdana">
+<B>8086汇编语言初学者教程（第三部分）</B></FONT><FONT FACE="Verdana" SIZE=3><BR><BR>
+
+<FONT SIZE=+2><B>变量<br>
+</B></FONT>
+<BR>变量是一个内存地址。对于编程者来说，使用诸如名称为“<b>var1</b>”这样的</FONT><p>
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+变量保存数据远远比使用5a73:235b这样的地址容易的多。特别是当你</FONT></p>
+<p>
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+使用10个以上的变量的时侯。</FONT></p>
+<p><span lang="en-us"><font face="Verdana">编译器支持这两种变量 <b>BYTE</b> </span>和<span lang="en-us">
+<b>WORD</b>.（字节和字）</span></font><FONT FACE="Verdana" SIZE=3><BR>
+<BR>
+
+
+</p>
+
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=100%><TR><TD>
+声明变量的方法：<BR><BR>
+<I><U>name</U></I> <B>DB</B> <U> <I>value </I></U>名称 DB 值<BR><BR>
+<I><U>name</U></I> <B>DW</B> <U> <I>value</I></U> 名称 DW 值<BR><BR>
+
+<B>DB</B> - stays for <U>D</U>efine <U>B</U>yte.<BR>
+<B>DW</B> - stays for <U>D</U>efine <U>W</U>ord.<BR>
+<BR>
+
+<I><U>name</U></I> －可以是任何字母与数字构成，但是必须由字母<p>开头。可以通过不命名来声明一个没有名称的的变量（这个变量</p>
+<p>只有地址，没有名称）</p>
+<p>
+<I><U>value</U></I> - 可以是任何数值支持三种进制(十六进制,二进制和</p>
+<p>十进制),你可以使用&quot;?&quot;符号表示初始值没有确定。
+</TD></TR></TABLE>
+
+
+<BR>你可能从第二章了解到，
+<B>MOV</B> 指令是将数值从源拷贝到目的。<p>让我们再看一个<B> MOV</B> 指令的例子<BR>
+<BR></p>
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+#MAKE_COM#
+ORG 100h
+
+MOV AL, var1
+MOV BX, var2
+
+RET    ; stops the program.
+
+VAR1 DB 7
+var2 DW 1234h
+</FONT></PRE>
+</TD></TR></TABLE>
+<BR>
+将上面的代码拷贝到emu8086源程序编辑器中，按下F5键编译<p>并在模拟器中执行。你会看到如下画面<BR><BR>
+<IMG SRC="tut3a.gif" width="371" height="347">
+<BR><br>
+从画面可以看出，反编译后的代码同源程序很相似，不同的是变量</p>
+<p>被具体的内存地址取代。当编译器生成机器代码它会自动将变量名称</p>
+<p>用该变量的便宜量代替。默认情况下，<B>DS</B> 寄存器存放段偏移</p>
+<p>（当执行com文件的时侯，<B>DS </B>寄存器的值同<B> CS </B>寄存器（代码段）</p>
+<p>的值一样）。<br>
+　</p>
+<p>内存第一列是偏移<B>（offset）</B>，第二列是一个十六进制值</p>
+<p>
+<B>（hexadecimal value）</B>，第三列是十进制<B>（decimal value）</B>，</p>
+<p>最后一列是<B> ASCII</B> 字符。</p>
+<p><BR>
+编译器是非大小写敏感的，所以 “<B>VAR1</B>” 同 “<B>var1</B>” 都是同一个变量。</p>
+<p><BR>
+<B>VAR1</B>变量的偏移是<b>0108h</b>，物理地址是<b>0b56:0108</b><br>
+<br>
+<B>var2 </B>变量的偏移是<b>0109h</b>，物理地址是 <b>0b56:0109</b></p>
+<p>这个变量是字，它占用2字节。这里假定低字节存放在低地址，</p>
+<p>所以<b>34h</b>位于<b>12h</b>前面。<BR>
+　</p>
+<p>你可以看到，在<b>RET</b>指令后面还有一些指令，这样是因为反编译工具</p>
+<p>无法判断数据从什么地方开始。同样，你可以写出直接使用<b>DB</b>的程序.<BR>
+<BR>
+</p>
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+#MAKE_COM#
+ORG 100h
+
+DB 0A0h
+DB 08h
+DB 01h
+
+DB 8Bh
+DB 1Eh
+DB 09h
+DB 01h
+
+DB 0C3h
+
+DB 7
+
+DB 34h
+DB 12h
+</FONT></PRE>
+</TD></TR></TABLE>
+　<p>将上面的代码拷贝到emu8086原代码编辑器，按下<B>F5</B>键编译，并在</p>
+<p>模拟器中运行，你可以看到同样的反汇编结果，得到同样的功能。</p>
+<p>根据上面，你可以猜测，编译器将源程序转化为一些字节的集合，</p>
+<p>这个集合被称作机器代码<B>(machine code)</B>，处理器懂得他们，并且</p>
+<p>执行它们。<BR>
+　</p>
+<p><b>ORG 100</b>是一个编译指令（它告诉编译器如何处理源代码）<br>
+<br>
+当你使用变量的时侯，这条指令特别重要。它通知编译器<br>
+<br>
+可执行程序将被调入偏移量是100h（256字节）的位置，<br>
+<br>
+有了它，编译器就可以计算出所有变量的正确地址，然后<br>
+<br>
+用这些地址（偏移量）来代替变量名称。上面的这些指令<br>
+<br>
+不会真正的编译为任何机器代码。</p>
+<p><BR>
+为何可执行程序总是被装入偏移量<b>100h</b>?操作系统在<B>CS</B>寄存器<br>
+<br>
+(代码段)存储着程序信息，比如命令行方式下的参数等等。<br>
+<br>
+尽管上面只是一个<b>COM</b>文件的例子，<b>EXE</b>文件调入在偏移量<b>0000</b><br>
+<br>
+的位置，他使用特定的段保存变量。我们在下面会学习到关于<br>
+<br>
+<b>EXE</b>文件的知识。<BR>
+　</p>
+
+<HR>
+
+<BR>
+
+<FONT SIZE=+2><B>数组</B></FONT><BR><BR>
+
+数组可以看作是变量链。一个字符串是一个字节数组的例子，<br>
+<br>
+其中每一个字符都当作一个ASCII码的值（0....255）<br>
+<br>
+下面是一些定义数组的例子<p>
+<FONT FACE="Fixedsys">
+a DB 48h, 65h, 6Ch, 6Ch, 6Fh, 00h<BR>
+b DB 'Hello', 0
+</FONT>
+
+<BR><BR>
+b是一个数组，当编译器发现引用了字符串值后，会自动将这些</p>
+<p>字符转化为对应的字节。下面图表表示的就是声明数组后在内存</p>
+<p>中的分布：<br>
+<br>
+<BR>
+
+<IMG SRC="array.gif" width="487" height="109">
+
+<BR>你可以使用方括号做下标直接访问到数组中的值，例如：<BR><BR>
+
+<FONT FACE="Fixedsys">
+MOV AL, a[3]
+</FONT>
+<BR><BR>
+同样，你还可以使用任意一个内存索引寄存器<B>BX, SI, DI, BP</B>，</p>
+<p>例如：</p>
+<p>
+<FONT FACE="Fixedsys">
+MOV SI, 3<BR>
+MOV AL, a[SI]<BR>
+</FONT>
+
+<BR>如果你想声明比较复杂的数组，你可以使用<B>DUP</B>指令 形式如下<BR>
+
+<BR>
+<FONT FACE="Fixedsys">
+<U>number</U> DUP ( <U>value(s)</U> )
+</FONT>
+<BR>
+<U>number</U> - 重复的数量（任意常数）<BR>
+<U>value</U> - 将要复制的表达式<BR><BR>
+
+例如：</p>
+<p>
+<FONT FACE="Fixedsys">
+c DB 5 DUP(9)
+</FONT>
+</p>
+<p>就相当于如下定义：</p>
+<p>
+<FONT FACE="Fixedsys">
+c DB 9, 9, 9, 9, 9
+</FONT>
+<BR><BR>
+
+另外一个例子：</p>
+<p>
+<FONT FACE="Fixedsys">
+d DB 5 DUP(1, 2)
+</FONT>
+</p>
+<p>等同于</p>
+<p>
+<FONT FACE="Fixedsys">
+d DB 1, 2, 1, 2, 1, 2, 1, 2, 1, 2
+</FONT>
+<BR>　</p>
+<p>当然，如果需要存放超过255或者小于－128的数值，你还可以<br>
+<br>
+使用<B>DW</B>来代替 <B>DB</B>。但是<B>DW</B>不能用于声明字符串。<BR>
+　</p>
+<p> <B>DUP</B>命令展开后不能超过1020个字符（上一个例子中展开之后<br>
+<br>
+是13个字符），如果需要声明请将它们分成两行（这样，内存中<br>
+<br>
+得到的仍然是一个大数组）。<BR>
+
+</p>
+
+<HR>
+
+<BR>
+
+<FONT SIZE=+2><B>取得变量地址 </B></FONT>
+<BR> <B>LEA</B>指令（Load Effective Address 读取有效地址）或者<B>OFFSET</B><br>
+<br>
+指令。<B>OFFSET</B> 和
+<B>LEA</B>二者都能够获得变量的偏移量。<br>
+<br>
+<B>LEA</B>在使用中更有效，这是因为它能返回索引变量的地址。取得<br>
+<br>
+变量地址在很多情况下是非常有用的，例如你打算向一个过程<br>
+<br>
+传递参数。<BR>
+
+<BR>
+
+<HR>
+
+<BR>
+<b>注意：</b><br>
+<br>
+
+</FONT>
+
+
+<FONT FACE="Verdana" SIZE=2>
+
+
+在编译过程中使用如下声明数据类型<br>
+BYTE PTR - 表示字节<br>
+<br>
+WORD PTR - 表示字（2个字节）<br>
+<br>
+例如：<br>
+<br>
+BYTE PTR [BX] ;按字节访问<br>
+or<br>
+WORD PTR [BX] ;按字访问<br>
+<br>
+Emu8086 容许使用如下更简洁的前缀<br>
+<br>
+b. - 等价于上面的 BYTE PTR<br>
+<br>
+w. - 等价于上面的 WORD PTR<br>
+<br>
+有时，编译器可以自动计算出数据类型，但是如果一个参与运算<br>
+<br>
+的数是立即数，这种方法就不可靠了。</FONT><FONT FACE="Verdana" SIZE=3><FONT SIZE=1><BR><BR>
+</FONT>
+<HR>
+
+<BR><BR>
+
+第一个例子：<BR><BR>
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+ORG 100h
+
+MOV    AL, VAR1      ; 将变量var1的数值放入al以便检查
+
+LEA    BX, VAR1              ; 将var1的地址存入 BX.
+
+MOV    BYTE PTR [BX], 44h    ; 修改变量var1的内容
+
+MOV    AL, VAR1              ; 将变量VAR1的数值放入AL以便检查
+
+RET
+
+VAR1   DB  22h
+
+END
+</FONT></PRE>
+</TD></TR></TABLE>
+<BR>下面是另外一个例子，用<B>OFFSET</B>指令代替<B>LEA：</B><BR><BR>
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+ORG 100h
+
+MOV    AL, VAR1              ; 将变量VAR1的值放入AL以便检查.
+
+MOV    BX, OFFSET VAR1       ; 将变量VAR1的地址放入 BX.
+
+MOV    BYTE PTR [BX], 44h    ; 修改变量VAR1内容
+
+MOV    AL, VAR1              ;将变量VAR1的值放入 AL以便检查.
+
+RET
+
+VAR1   DB  22h
+
+END
+</FONT></PRE>
+</TD></TR></TABLE>
+<BR>
+
+上面例子的功能相同。<br>
+<br>
+这些语句：<BR>
+<FONT FACE="Fixedsys">
+LEA    BX, VAR1<BR>
+MOV    BX, OFFSET VAR1
+</FONT>
+<BR>
+都将生成同样的机器代码: <FONT FACE="Fixedsys">MOV    BX, num</FONT><BR>
+<I>num</I> 是16位变量偏移<p><br>
+请注意，只有这些寄存器可以放入方括号中（作为内存指针）<br>
+<br>
+<B>BX, SI, DI, BP</B>(请参考本教程前述章节)<BR>
+　</p>
+
+<HR>
+
+<BR>
+
+<FONT SIZE=+2><B>常量</B></FONT><BR><BR>
+
+常量同变量很相似，但是它一直存在。定义一个变量之后，它的值<p>不会改变。使用<B>EQU</B>定义常量：<BR>
+</p>
+<BLOCKQUOTE>
+name equ &lt;任意表达式&gt;</BLOCKQUOTE>
+<BR>
+例如：<BR><BR>
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<FONT FACE="Fixedsys">
+k EQU 5<BR>
+<BR>
+MOV AX, k
+</FONT>
+</TD></TR></TABLE>
+<BR>上面的例子等同于如下代码：<BR><BR>
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<FONT FACE="Fixedsys">
+MOV AX, 5
+</FONT>
+</TD></TR></TABLE>
+
+
+<BR><BR>
+
+<HR>
+在程序执行过程中你可以选择模拟器&quot;<b>View</b>&quot;菜单下的&quot;<B>Variables</B>&quot;<BR><BR>
+<IMG SRC="varview.gif" width="324" height="221">
+
+<BR><BR>
+
+你可以点一个变量然后设置<B>Elements</B>属性为数组大小来查看数组。<br>
+<br>
+汇编语言对于数据类型并不严格，这样以来所有的变量都可以被看<p>作是数组。</p>
+<p>变量可以显示为下列进制<BR>
+</p>
+<UL>
+<LI><B>HEX</B> - 十六进制 hexadecimal (基底 16).<BR></LI>
+<LI><B>BIN</B> - 二进制 (基底 2).<BR></LI>
+<LI><B>OCT</B> - 八进制 (基底 8).<BR></LI>
+<LI><B>SIGNED</B> - 有符号十进制 (基底 10).<BR></LI>
+<LI><B>UNSIGNED</B> - 无符号十进制 (基底 10).<BR></LI>
+<LI><B>CHAR</B> - ASCII 码 (一共有256个符号，其中一些符号是不可见的).</LI>
+</UL>
+程序运行的时侯，你可以通过双击它来编辑变量值，或者选中<br>
+<br>
+之后点<B>Edit</B>按钮。<p>十六进制数值以&quot;<B>h</B>&quot;结尾，二进制以&quot;<B>b</B>&quot; 结尾，八进制以&quot;<B>o</B>&quot; 结尾<br>
+<br>
+十进制没有结尾。字符串用这样的方式表示：<b>'hello world',0</b><br>
+<br>
+(结尾以0表示)</p>
+<p>数组按照如下输入：<BR>
+<B>1, 2, 3, 4, 5</B></p>
+<p>（数组可以是一组字节或者字，这取决于你想以<b>字节</b>还是<b>字</b>的</p>
+<p>方式编辑）<BR>
+<BR>
+表达式会自动计算，例如，输入如下表达式<BR>
+<B>5 + 2</B><BR>
+会自动计算为7。等等....<BR><BR>
+
+</p>
+
+<HR>
+
+
+<BR><BR><BR>
+
+<HR>
+<CENTER>
+<A HREF="asm_tutorial_02.html"><B> &lt;&lt;&lt; 上一部分 &lt;&lt;&lt; </B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="asm_tutorial_04.html"><B> >>> 下一部分>>> </B></A>
+</CENTER>
+<HR>
+
+<BR>
+
+</FONT>
+
+
+</TD></TR>
+</TABLE>
+
+
+</BODY>
+
+</HTML>

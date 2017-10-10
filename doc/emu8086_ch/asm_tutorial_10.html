@@ -1,0 +1,263 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 10)</TITLE>
+
+<META name="description" content="Macros for 8086 Assembler">
+
+<META name="keywords" content="macros, 8086, procedures, tutorial, programming">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+<FONT SIZE=+1>
+<B>8086 Assembler Tutorial for Beginners (Part 10)</B>
+</FONT>
+
+
+
+<BR><BR>
+
+<FONT SIZE=+2><B>宏</B></FONT>
+<BR><BR>
+
+
+
+宏与过程很相似，但并不是完全相似。宏看起来像<br>
+<br>
+过程，但是当你的代码编译完成之后就消失了，取<br>
+<br>
+而代之的是真正的代码。如果你声明一个宏，而在<br>
+<br>
+代码中从来没有调用，编译器在编译过程中将忽略它</FONT><p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+<B><A HREF="asm_tutorial_05.html">emu8086.inc</A></B></FONT><font face="Verdana">是一个如何使用宏的很好的例子，这个<br>
+<br>
+文件包含的几个宏，会使你的编程更加容易。</font></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+</p>
+<TABLE BORDER=1 CELLPADDING=10><TR><TD>
+宏的定义 :
+
+<BR>
+<PRE>name MACRO [参数,]
+
+&lt;指令&gt;
+
+ENDM</PRE>
+</TD></TR></TABLE>
+
+<BR><BR>
+
+与过程不同，宏要求定义参数并使用。例如:
+<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10><TR><TD>
+<PRE><FONT FACE="Fixedsys">MyMacro    MACRO  p1, p2, p3
+
+     MOV AX, p1
+     MOV BX, p2
+     MOV CX, p3
+
+ENDM
+
+ORG 100h
+
+MyMacro 1, 2, 3
+
+MyMacro 4, 5, DX
+
+RET</FONT></PRE>
+</TD></TR></TABLE>
+
+<BR><BR>
+
+上述代码在编译过程中将展开成:<BR><BR>
+<FONT FACE="Fixedsys">
+MOV AX, 00001h<BR>
+MOV BX, 00002h<BR>
+MOV CX, 00003h<BR>
+MOV AX, 00004h<BR>
+MOV BX, 00005h<BR>
+MOV CX, DX<BR>
+</FONT>
+
+<BR>
+<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10><TR><TD>
+
+<BR>
+关于<b>宏</b>与<b>过程</b>需要注意如下要点:
+<UL>
+
+<LI>当你想使用一个过程，你应该使用<FONT FACE="Verdana" SIZE=3><B>CALL</B></FONT>指令，例如：<BR>
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+CALL MyProc
+</FONT>
+</BLOCKQUOTE>
+</LI>
+
+<LI>
+当你想使用一个宏，你只需要输入它的名称。例如:<BR>
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+MyMacro
+</FONT>
+</BLOCKQUOTE>
+</LI>
+
+
+<LI>
+过程是存在于内存中某一特定位值的，即使你调用这个<br>
+<br>
+过程100次，cpu只是执行内存中这一段的代码。在遇到<br>
+<br>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+<B>RET</B></FONT>指令后还会回到调用该过程的位值。这是通过使用<br>
+<br>
+<b>堆栈</b>保存返回地址来实现的。<FONT FACE="Verdana" SIZE=3><B>CALL</B></FONT>指令占用3字节，<br>
+<br>
+所以无论调用多少次过程，最终输出的可执行文件<br>
+<br>
+并不会因此而显著增大。<br>
+<BR>
+</LI>
+
+<LI>
+宏会在程序代码中展开。如果你使用相同的宏100次，<br>
+<br>
+输出的可执行文件将会变得越来越大，因为每一次调<br>
+<br>
+用宏中的指令都会插入到调用宏的位值。<BR><BR>
+</LI>
+
+
+<LI>
+你可以使用<b>堆栈</b>或者<b>通用寄存器</b>来向过程传递参数<BR><BR>
+</LI>
+
+<LI>
+向宏传递参数的方法是在宏名称后面直接接上参数。例如:
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+MyMacro 1, 2, 3
+</FONT>
+</BLOCKQUOTE>
+</LI>
+
+
+<LI>用<FONT FACE="Verdana" SIZE=3><B>ENDM</B></FONT>指令结束宏就足够了<BR><BR>
+</LI>
+
+<LI>标记过程结束，你需要在<FONT FACE="Verdana" SIZE=3><B>ENDP</B></FONT>指令前加上过程名称</LI>
+
+</UL>
+
+</TD></TR></TABLE>
+
+
+<BR><BR>
+宏会直接在代码中展开，因此，如果你在宏中使用<br>
+<br>
+标记，当宏被调用2次或两次以上的时侯就会出现<br>
+<br>
+&quot;Duplicate declaration&quot;（重复定义） 这一错误。为了避免该错误<br>
+<br>
+在变量，标记或者过程名称之前加上“<b>local</b>”指令。例如:<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=80%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+MyMacro2    MACRO
+	LOCAL label1, label2
+
+	CMP  AX, 2
+	JE label1
+	CMP  AX, 3
+	JE label2
+	label1:
+		 INC  AX
+	label2:
+		 ADD  AX, 2
+ENDM
+
+
+ORG 100h
+
+MyMacro2
+
+MyMacro2
+
+RET</FONT></PRE>
+</TD></TR></TABLE>
+
+
+<BR><BR>
+I若过你打算在很多程序中使用宏，将所有的宏存放在一个<br>
+<br>
+文件中不失为一个好办法。将那个文件放在INC目录下，使用<B> INCLUDE <i>文件名 </i></B>就可以在你的程序中调用宏了。请查阅&nbsp; <A HREF="asm_tutorial_05.html"><B>Library of common functions - emu8086.inc</B></A> 
+一个相关的例子.
+
+
+
+<BR><BR><BR>
+
+<HR>
+<CENTER>
+<A HREF="asm_tutorial_09.html"><B> &lt;&lt;&lt; 前一部分 &lt;&lt;&lt; </B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="asm_tutorial_11.html"><B> >>> 后一部分 >>> </B></A>
+</CENTER>
+<HR>
+
+
+
+<BR>
+
+</FONT>
+
+
+
+</TD></TR>
+</TABLE>
+
+
+</BODY>
+
+</HTML>

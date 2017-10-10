@@ -1,0 +1,206 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 12)</TITLE>
+
+<META name="description" content="Controlling External Devices">
+
+<META name="keywords" content="external, devices, 8086, traffic lights, stepper motor, robot">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+
+<FONT SIZE=+1>
+<B>8086 Assembler Tutorial for Beginners (Part 12)</B>
+</FONT>
+
+
+
+<BR><BR>
+
+<FONT SIZE=+2><B>控制外部设备</B></FONT>
+<BR><BR><BR>
+
+模拟器提供了3个设备：交通灯,步进电动机 和机器人<br>
+<br>
+你可以从模拟器的“<B>Virtual Devices</B>”菜单中启动它们。<BR><BR>
+
+技术信息请参考Emu8086参考中的&nbsp; <A HREF="io.html"><B>I/O ports</B></A> 一章。</FONT><p>
+<font face="Verdana">一般来说，通过x86家族的CPU可以控制各种设备，这些设备是通过不同<br>
+<br>
+I/O端口区分开的，这可以通过一些电子设备达到目的。通常，'<b>.bin</b>'<br>
+<br>
+文件是用来写入只读存储器（ROM）的，系统从只读存储器中读取，然后<br>
+<br>
+写入ram并执行。这个原理在许多现代设备中都采用，比如：微波炉等等</font><FONT FACE="Verdana" SIZE=3><BR>
+　</p>
+
+<HR>
+<BR>
+
+<b>交通灯</b><BR><BR>
+
+<IMG SRC="traffic.gif" width="233" height="276">
+
+<BR><BR>
+通常使用一个数组（表）控制交通灯。在特定时间，从数组中读取数值<br>
+<br>
+发送到端口。例如：<BR><BR>
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=70%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+; directive to create BIN file:
+#MAKE_BIN#
+#CS=500#
+#DS=500#
+#SS=500#
+#SP=FFFF#
+#IP=0#
+
+; skip the data table:
+JMP start
+
+table DW 100001100001b
+      DW 110011110011b
+      DW 001100001100b
+      DW 011110011110b
+
+start:
+
+MOV SI, 0
+
+; set loop counter to number
+; of elements in table:
+MOV CX, 4
+
+next_value:
+
+; get value from table:
+MOV AX, table[SI]
+
+; set value to I/O port
+; of traffic lights:
+OUT 4, AX
+
+; next word:
+ADD SI, 2
+
+CALL PAUSE
+
+LOOP next_value
+
+; start from over from
+; the first value
+JMP start
+
+; ==========================
+PAUSE PROC
+; store registers:
+PUSH CX
+PUSH DX
+PUSH AX
+
+; set interval (1 million
+; microseconds - 1 second):
+MOV     CX, 0Fh
+MOV     DX, 4240h
+MOV     AH, 86h
+INT     15h
+
+; restore registers:
+POP AX
+POP DX
+POP CX
+RET
+PAUSE ENDP
+; ==========================</FONT></PRE>
+</TD></TR></TABLE>
+
+<BR><BR>
+
+<HR>
+
+<BR>
+<b>步进电动机</b>
+<BR><BR>
+
+<IMG SRC="stepper.gif" width="237" height="215">
+
+<BR><BR>
+
+发动机靠单向的磁力运作，旋转一对磁铁，发动机能够半速运作。<br>
+<br>
+再旋转另一对磁铁，发动机能够全速运作。<br>
+<br>
+所以，最好的方法是两个半速的叠加以达成全速的运转。<br>
+<br>
+半速相当于<b>11.25</b>度<br>
+<br>
+全速相当于<b>22.5</b>度=半速的2倍<br>
+<br>
+发动机能够顺时旋转，也可逆时旋转。<br>
+<br>
+参考<A HREF="../Samples/stepper_motor.asm"><B>stepper_motor.asm</B></A>。<br>
+<br>
+或参考EMU8086 <A HREF="io.html"><B>I/O ports</B></A> 章节。<BR><BR>
+
+　<HR>
+
+<BR>
+<b>机器人</b>
+<BR><BR>
+
+<IMG SRC="robot.gif" width="530" height="352">
+
+<BR><BR>
+控制机器人的指令在 Emu8086参考的
+<A HREF="io.html"><B>I/O ports</B></A>章节<br>
+<br>
+为了得到最高的效率，应该使用复杂的算法。最简单，<br>
+<br>
+也是最没有效率的算法就是随机移动算法，具体代码<br>
+<br>
+请查阅 文件夹中的<A HREF="../Samples/robot.asm"><B>robot.asm</B></A>使用数据表（像前面 <br>
+<br>
+交通灯一样）也可以，特别是当机器人始终处于同样的<br>
+<br>
+环境的时侯。<BR><BR>
+
+<HR>
+<CENTER>
+<A HREF="asm_tutorial_11.html"><B> &lt;&lt;&lt; 前一部分 &lt;&lt;&lt; </B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="asm_tutorial_13.html"><B> >>> 后一部分>>> </B></A>
+</CENTER>
+<HR>
+
+
+
+<BR>
+
+</FONT>
+
+
+
+</TD></TR>
+</TABLE>
+
+
+</BODY>
+
+</HTML>

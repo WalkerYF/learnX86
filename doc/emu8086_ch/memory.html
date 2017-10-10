@@ -1,0 +1,327 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>Global Memory Table</TITLE>
+
+<META name="description" content="Global Memory Table">
+
+<META name="keywords" content="global, memory, table">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+<FONT FACE="Verdana" SIZE=3>
+
+<FONT SIZE=+2>
+<B>Global Memory Table</B>
+</FONT>
+
+<BR><BR>
+
+<BR>
+
+<B>8086 CPU</B> can access up to <B>1 MB</B> of random access memory (RAM),
+it is limited by segment/offset construction. Since segment registers (<B>CS, SS, ES, DS</B>)
+can hold maximum value of <B>0FFFFh</B> and offset registers (<B>IP, BX, SI, DI, BP, SP</B>) can also hold maximum value
+of <B>0FFFFh</B>, the largest logical memory location that we can access is <B>FFFF:FFFF</B>
+or physical address:
+<FONT FACE="Fixedsys"><NOBR>0FFFFh * 10h + 0FFFFh = 10FFEFh = 65535 * 16 + 65535 = 1,114,095 bytes</NOBR></FONT>
+<BR>
+Modern processors have a larger registers so they have much larger memory area
+that can be accessed, but the idea is still the same.
+
+<BR><BR>
+
+<HR>
+
+<BR>
+
+Memory Table of Emulator (and typical IBM PC):<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10 COLS=2 WIDTH=100%>
+
+<TR>
+	<TD WIDTH=30%>
+	<B>Physical address of memory area in HEX</B>
+	</TD>
+	<TD>
+	<B>Short Description</B>
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+	00000 - 00400
+	</TD>
+	<TD>
+	Interrupt vectors. Emulator loads "<B>INT_VECT</B>" file at the physical address 00000h.
+	</TD>
+</TR>
+
+
+<TR>
+	<TD>
+	00400 - 00500
+	</TD>
+	<TD>
+	System information area. We use a trick to set some parameters by loading a tiny last part (21 bytes) of "<B>INT_VECT</B>" in that
+	area (the size of that file is 1,045 or 415h bytes, so when loaded it takes memory from 00000 to 00415h).<BR>
+	This memory block is updated by emulator when configuration changes, see <A HREF="#sinfo"><B>System information area</B></A> table.
+
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+	<B>00500 - A0000</B>
+	</TD>
+	<TD>
+	A free memory area. A block of <B>654,080 bytes</B>. Here you can load your programs.
+	</TD>
+</TR>
+
+
+<TR>
+	<TD>
+	A0000 - B1000
+	</TD>
+	<TD>
+	Video memory for VGA, Monochrome, and other adapters.
+	Not used by emulator!
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+	B1000 - B8000
+	</TD>
+	<TD>
+	Reserved.
+	Not used by emulator!
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+	B8000 - C0000
+	</TD>
+	<TD>
+    32 KB video memory for Color Graphics Adapter (CGA).
+    Emulator uses this memory area to keep 8 pages of video
+    memory. The Emulator screen can be resized, so less memory
+    is required for each page, although emulator always uses 1000h (4096 bytes)
+    for each page (see INT 10h / AH=05h in
+    <A HREF="supported_interrupts.html">the list of supported interrupts</A>).
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+	C0000 - F4000
+	</TD>
+	<TD>
+    Reserved.
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+	F4000 - 10FFEF
+	</TD>
+	<TD>
+    ROM BIOS and extensions. Emulator loads "<B>BIOS_ROM</B>" file at the physical address 0F4000h.
+    Interrupt table points to this memory area to get emulation of interrupt functions.
+	</TD>
+</TR>
+
+</TABLE>
+
+
+<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10 COLS=2 WIDTH=100%>
+<TR><TD>
+Interrupt Vector (memory from 00000h to 00400h)
+
+<PRE><FONT FACE="Fixedsys">
+INT number       Address in              Address of
+in hex           Interrupt Vector        BIOS sub-program
+
+00               00x4 = 00               F400:0170 - CPU-generated,
+                                                     divide error.
+
+04               04x4 = 10               F400:0180 - CPU-generated,
+                                                     INTO detected
+                                                     overflow.
+
+10               10x4 = 40               F400:0190 - Video functions.
+
+11               11x4 = 44               F400:01D0 - Get BIOS
+                                                     equipment list.
+
+12               12x4 = 48               F400:01A0 - Get memory size.
+
+13               13x4 = 4C               F400:01B0 - Disk functions.
+
+15               15x4 = 54               F400:01E0 - BIOS functions.
+
+16               16x4 = 58               F400:01C0 - Keyboard functions.
+
+19               19x4 = 64               FFFF:0000 - Reboot.
+
+1A               1Ax4 = 68               F400:0160 - Time functions.
+
+1E               1Ex4 = 78               F400:AFC7 - Vector of Diskette
+                                                     Controller Params.
+
+20               20x4 = 80               F400:0150 - DOS function:
+                                                     terminate program.
+
+21               21x4 = 84               F400:0200 - DOS functions.
+
+all others       ??x4 = ??               F400:0100 - The default interupt
+                                                     catcher. Prints out
+                                                     "Interupt not supported
+                                                     yet" message.
+</FONT></PRE>
+
+A call to BIOS sub-system is
+ disassembled  by "BIOS DI" (it doesn't
+ use DI  register in any way, it's just
+ because of the way the encoding is
+ done: we are using "FF /7" for such
+ encoding, "FFFFCD10" is used to make
+ emulator to emulate interrupt number 10h).<BR><BR>
+ F400:0100 has this code FFFFCDFF (decoded as INT 255,
+ and error message is generated).
+
+</TD></TR></TABLE>
+
+<BR><BR>
+
+<HR>
+<A NAME="sinfo">&nbsp;</A>
+<BR>
+
+System information area (memory from 00400h to 00500h)
+
+<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10 COLS=3 WIDTH=100%>
+<TR>
+<TD><B>Address (hex)</B></TD> <TD><B>Size</B></TD> <TD><B>Description</B></TD>
+</TR>
+
+<TR>
+<TD>0040h:0010</TD> <TD>WORD</TD>
+<TD>
+BIOS equipment list.
+<PRE><FONT FACE="Fixedsys">
+Bit fields for BIOS-detected installed hardware:
+Bit(s)	Description
+ 15-14  number of parallel devices.
+ 13     not supported.
+ 12     game port installed.
+ 11-9   number of serial devices.
+ 8      reserved.
+ 7-6    number of floppy disk drives (minus 1):
+          00 single floppy disk;
+          01 two floppy disks;
+          10 three floppy disks;
+          11 four floppy disks.
+ 5-4    initial video mode:
+          00 EGA,VGA,PGA, or other with on-board video BIOS;
+          01 40x25 CGA color;
+          10 80x25 CGA color (emulator default);
+          11 80x25 mono text.
+ 3    not supported.
+ 2    not supported.
+ 1    math coprocessor installed.
+ 0    set when booted from floppy (always set by emulator).
+</FONT></PRE>
+ This word is also returned in <B>AX</B> by <B>INT 11h</B>.<BR>
+ Default value: <B>0021h</B> or <B>0000 0000 0010 0001b</B>
+</TD>
+</TR>
+
+
+<TR>
+<TD>0040h:0013</TD> <TD>WORD</TD>
+<TD>
+	Kilobytes of contiguous memory starting
+        at absolute address 00000h.<BR>
+ This word is also returned in <B>AX</B> by <B>INT 12h</B>.<BR>
+ This value is set to: <B>0280h</B> (640KB).
+</TD>
+</TR>
+
+
+<TR>
+<TD>0040h:004A</TD> <TD>WORD</TD>
+<TD>
+Number of columns on screen.<BR>
+  Default value: <B>0032h</B> (50 columns).
+</TD>
+</TR>
+
+
+<TR>
+<TD>0040h:004E</TD> <TD>WORD</TD>
+<TD>
+Current video page start address in video memory <NOBR>(after 0B800:0000).</NOBR><BR>
+  Default value: <B>0000h</B>.
+</TD>
+</TR>
+
+<TR>
+<TD>0040h:0050</TD> <TD><NOBR>8 WORDs</NOBR></TD>
+<TD>
+Contains row and column position for the cursors on each of eight
+	  video pages.<BR>
+  Default value: <B>0000h</B> (for all 8 WORDs).
+</TD>
+</TR>
+
+<TR>
+<TD>0040h:0062</TD> <TD>BYTE</TD>
+<TD>
+Current video page number.<BR>
+  Default value: <B>00h</B> (first page).
+</TD>
+</TR>
+
+<TR>
+<TD>0040h:0084</TD> <TD>BYTE</TD>
+<TD>
+Rows on screen minus one.<BR>
+  Default value: <B>13h</B> (19+1=20 columns).
+</TD>
+</TR>
+
+</TABLE>
+
+<BR><BR>
+<BR>See also:
+<A HREF="custom_memory_map.html"><B>Custom Memory Map</B></A>
+<BR><BR><BR>
+
+</FONT>
+
+</TD></TR>
+</TABLE>
+
+<BR>
+
+
+
+</BODY>
+
+</HTML>

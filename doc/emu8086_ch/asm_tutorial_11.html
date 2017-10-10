@@ -1,0 +1,214 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 11)</TITLE>
+
+<META name="description" content="Making your own Operating System">
+
+<META name="keywords" content="operating system, 8086, tutorial, programming, assembler tutorial, tutorial for begginers">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+
+
+<TABLE WIDTH=80%>
+<TR>
+    <TD> <FONT FACE="Verdana" SIZE=3> <FONT SIZE=+1> <B>8086 Assembler Tutorial
+      for Beginners (Part 11)</B> </FONT> <BR>
+      <BR>
+      <FONT SIZE=+2><B>编写你自己的操作系统</B></FONT><BR>
+      <BR>
+      <BR>
+      通常，计算机启动之后会读取你<b>A:</b>盘第一个512字节扇区（面<b> 0 </b>柱<b> 0 </b>区<b> 1</b>），<br>
+    <br>
+    并存放在0000h:7c00h，然后将控制权交给它。如果读取失败，bios将<br>
+    <br>
+    使用第一个硬盘的MBR来完成这个工作。<BR>
+      <BR>
+      这一节教程讲述如何从软盘启动，基本原理与从硬盘启动一样。<br>
+    <br>
+    而使用软盘启动有如下优点:
+      <UL>
+        <LI>你可以保证你自己的操作系统不受到其他操作系统的影响<br>
+        （windows dos）.<BR>
+          <BR>
+        </LI>
+        <LI>修改软盘的启动记录很容易.</LI>
+      </UL>
+      <BR>
+      一个简单的从软盘启动的程序:<BR>
+      <BR>
+      <TABLE BORDER=1 CELLPADDING=10 WIDTH=70%>
+        <TR>
+          <TD>
+            <PRE><FONT FACE="Fixedsys">
+; 建立 BOOT 文件的指令e:
+#MAKE_BOOT#
+
+; 启动区要求读入到 0000:7C00,
+; 通知编译器
+ORG 7C00h
+
+; 将信息地址存入 SI 寄存器:
+LEA SI, msg
+
+; teletype function id:
+MOV AH, 0Eh
+
+print:   MOV AL, [SI]
+         CMP AL, 0
+         JZ done
+         INT 10h   ; print using teletype.
+         INC SI
+         JMP print
+
+; 等待任意键按下
+done:      MOV AH, 0
+           INT 16h
+
+
+; store magic value at 0040h:0072h:
+;   0000h - cold boot.
+;   1234h - warm boot.
+MOV     AX, 0040h
+MOV     DS, AX
+MOV     w.[0072h], 0000h ; cold boot.
+
+JMP	0FFFFh:0000h	 ; reboot!
+
+
+new_line EQU 13, 10
+
+msg DB  'Hello This is My First Boot Program!'
+    DB  new_line, 'Press any key to reboot', 0
+</FONT></PRE>
+          </TD>
+        </TR>
+      </TABLE>
+      <BR>
+      <BR>
+      <br>
+    将上述例子拷贝到<B>Emu8086</B>源代码编辑器，按下<br>
+    <br>
+    <b>[compile and emulate]</b>。模拟器将会自动读取<br>
+    <br>
+    “.boot”文件到000h:7c00h<BR>
+      <BR>
+      你可以像普通程序一样运行上面的例子，也可以使用<B>Virtual </B>菜单中的<B><br>
+    <br>
+    Write 512 bytes at 7C00h to</B> 将其写入一个虚拟软盘（模拟器安装<br>
+    <br>
+    目录下的floppy_0文件）<B>Boot Sector</B>, 将你的程序写入一个虚拟软盘<br>
+    <br>
+    之后，你可以选择<B>Virtual Drive</B> 菜单中的<B>Boot
+      from Floppy</B>来从你<br>
+    <br>
+    做好的操作系统中启动。<BR>
+      <BR>
+      <HR>
+      <BR>
+      <br>
+    如果你对这方面感兴趣，你可以将虚拟软盘（<B>FLOPPY_0</B>）或者<br>
+    <br>
+    &quot;<b>.boot</b>&quot;文件写入一个真正的软盘中，可以用它启动你的计算机。<br>
+    <br>
+    我推荐使用 rawwrite for windows ,下载地址:<br>
+    <br>
+&nbsp;<A HREF="http://uranus.it.swin.edu.au/~jn/linux/rawwrite.htm"><B>http://uranus.it.swin.edu.au/~jn/linux/rawwrite.htm</B></A><BR>
+       <br>
+       (最新的版本可以在所有的windows下工作!)
+      <br><br>
+    <b>注意</b>：<b>.boot </b>文件的内容<b>不是 </b>ms-dos 兼容的启动区格式<br>
+    <br>
+    （也就是说你无法在windows或者dos下读写软盘内容，<br>
+    <br>
+    除非你重新格式化该软盘），所以不要用它存放数据。实际上，<br>
+    <br>
+    无论你使用什么raw-write程序写入，他们都会删除软盘上<br>
+    <br>
+    的数据。所以在制作启动盘之前，请确认盘上没有重要信息。<br>
+      　<HR>
+      <BR>"<B>.boot</B>&quot;文件被限制只有512字节大小（一个扇区大小）。如果你<br>
+    <br>
+    的操作系统超过这个大小，你需要从其他扇区读取信息。你可以<br>
+    <br>
+    在Sample目录下找到一个微型的操作系统的很好的例子：<br>
+    <BR>
+      <A HREF="../Samples/micro-os_loader.asm"><B>micro-os_loader.asm</B></A><BR>
+      <br>
+    <B>
+      <A HREF="../Samples/micro-os_kernel.asm">micro-os_kernel.asm</A></B><BR>
+      <BR>
+      <BR>
+      为了建立大一些的操作系统（超过512字节），<br>
+    <br>
+    你可以使用‘<b>.bin</b>’文件（'<b>File</b>'-&gt;'<b>New</b>'中选择‘<b>Bin Templeate</b>’）<br>
+    <br>
+    使用模拟器菜单中的<B>"Write .bin file
+      to floppy..."</B>:<BR>
+      <IMG SRC="write_bin.gif" width="366" height="239"> <BR>
+      <BR>
+      你还可以使用这个写‘<b>boot</b>’文件:<BR>
+      <BR>
+      <TABLE BORDER=1 CELLPADDING=8 width="194">
+        <TR>
+          <TD> 位于:<BR>
+            <BLOCKQUOTE> <FONT FACE="Fixedsys"> Cylinder: 0<br>
+              Head:0<br>
+              Sector: 1<BR>
+              </FONT> </BLOCKQUOTE>
+            的扇区是启动扇区! </TD>
+        </TR>
+      </TABLE>
+      </FONT>
+      <p><FONT FACE="Verdana" SIZE=3><BR>
+        <BR>
+        软盘和硬盘的示意图: <BR>
+        <BR>
+        <IMG SRC="floppy.gif" width="367" height="374"> <BR>
+        </FONT></p>
+      <p><FONT FACE="Verdana" SIZE=3>对于一张1440kb 软盘:<BR>
+        </FONT></p>
+      <FONT FACE="Verdana" SIZE=3><UL>
+        <LI>软盘有2面，有2个磁头；这两个磁头分别位于每一个面（<b>0..1</b>）<BR>
+          <BR>
+        </LI>
+        <LI>每一面有80个磁道（编号 <b>0..79</b>）<BR>
+          <BR>
+        </LI>
+        <LI>每一磁道有18个扇区（<B>1..18</B>）<BR>
+          <BR>
+        </LI>
+        <LI>每一扇区有<b>512</b>字节<BR>
+          <BR>
+        </LI>
+        <LI>磁盘总容量 2*80*18*512＝1，474，560字节<BR>
+          <BR>
+        </LI>
+      </UL>
+      软盘扇区读取使用 <A HREF="supported_interrupts.html#int13h_02h"><B>INT
+      13h / AH = 02h</B></A>. <BR>
+      <BR>
+      <BR>
+      <HR>
+      <CENTER>
+        <A HREF="asm_tutorial_10.html"><B> &lt;&lt;&lt; 前一部分 &lt;&lt;&lt;
+        </B></A> &nbsp;&nbsp;&nbsp;&nbsp; <A HREF="asm_tutorial_12.html"><B> >>>
+        后一部分 >>> </B></A>
+      </CENTER>
+      <HR>
+      <BR>
+      </FONT> </TD>
+  </TR>
+</TABLE>
+
+
+</BODY>
+
+</HTML>

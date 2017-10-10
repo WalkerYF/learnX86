@@ -1,0 +1,452 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 7)</TITLE>
+
+<META name="description" content="Program Flow Control - Tutorial for Beginners">
+
+<META name="keywords" content="program flow control, 8086, tutorial, programming, assembler tutorial, tutorial for begginers">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<FONT SIZE=+1>
+<B>8086 Assembler Tutorial for Beginners (Part 7)</B>
+</FONT>
+
+
+
+
+<BR><BR>
+
+<FONT SIZE=+2><B>程序控制转移</B></FONT><BR><BR>
+
+<br>
+对于编程来说控制程序走向是非常重要的事情，它是你的程序根据条件<br>
+<br>
+作出判断，跳转到相应的位值。<br>
+
+<BR><BR>
+
+<UL>
+
+<LI><B>无条件跳转</B><BR><BR>
+ 控制程序转向的最基本的指令是j<B>JMP</B>.
+ <BR><BR>
+ 使用形式如下：<BLOCKQUOTE>
+ <FONT FACE="Fixedsys">
+ JMP <U>label</U>
+ </FONT>
+ </BLOCKQUOTE>
+
+ <br>
+在程序中声明/label/的方法很简单，只要在它名字后面加上“：”，<p>label可以由任何字符混合而成但是不能由数字开头，例如，下面</p>
+<p>是3个合法的label</p>
+ <BLOCKQUOTE>
+ <FONT FACE="Fixedsys">
+ label1:<BR>
+ label2:<BR>
+ a:
+ </FONT>
+ </BLOCKQUOTE>
+ label可以在一条指令的前面声明，例如:
+ <BLOCKQUOTE>
+ <FONT FACE="Fixedsys">
+ x1:<BR>
+ MOV AX, 1<BR><BR>
+ x2: MOV AX, 2<BR>
+ </FONT>
+ </BLOCKQUOTE>
+
+ 下面是一个<B> JMP</B> 指令的例子:<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><FONT FACE="Fixedsys">ORG 100h
+
+MOV AX, 5 ; 将 AX 设置为 5.
+MOV BX, 2 ; 将 BX 设置为 2.
+
+JMP calc ; 跳转到 'calc'.
+
+back: JMP stop ; 跳转到 'stop'.
+
+calc:
+ADD AX, BX ; 将 BX 加到 AX.
+JMP back ; 返回 'back'.
+
+stop:
+
+RET ; 返回操作系统
+
+END </FONT></PRE>
+</TD></TR></TABLE>
+
+<BR>
+
+当然有更简单的计算这两个数字之和的方法，但是<br>
+<br>
+上面是一个<B>JMP</B>指令的很好的例子。<p>从例子中可以看出，<B>JMP</B>可以控制向前和向后。它可以<br>
+<br>
+转移到当前代码段的任意位置（65535字节）。<br>
+
+<BR>
+短条件转移<BR><BR>
+
+ <br>
+与<B>JMP</B>这一无条件转移指令不同，还有一些有条件跳转<br>
+<br>
+指令（只有在条件成立的时侯才跳转）。这些指令分为<br>
+<br>
+三组，第一组是只检测单独标记位，第二组比较有符<br>
+<br>
+号数，第三组比较无符号数。<BR><BR>
+
+	<b>检测单独标记位的转移指令</b><BR>
+
+	<FONT FACE="Fixedsys">
+
+	</p>
+
+	<TABLE BORDER=1 CELLPADDING=7>
+	<TR>
+	<TD BGCOLOR=yellow>指令</TD> <TD BGCOLOR=yellow>说明</TD>
+	<TD BGCOLOR=yellow>条件</TD>
+	<TD BGCOLOR=yellow>相反指令</TD>
+	</TR>
+
+	<TR>
+    <TD>JZ , JE</TD> <TD>如果为0<FONT FACE="Fixedsys" SIZE="3">(相等)</FONT>，转移 .</TD> <TD>ZF =1</TD> <TD>JNZ, JNE</TD>
+	</TR>
+
+	<TR>
+    <TD><NOBR>JC , JB, JNAE</NOBR></TD> <TD>如果进位 (小于, 不大于等于)，转移</TD>
+    <TD>&nbsp;CF = 1</TD> <TD>JNC, JNB, JAE</TD>
+	</TR>
+
+	<TR>
+    <TD>JS</TD> <TD>如果是负数，转移</TD> <TD>&nbsp;SF = 1</TD> <TD>JNS</TD>
+	</TR>
+
+	<TR>
+    <TD>JO</TD> <TD>如果溢出，转移</TD> <TD>&nbsp;OF = 1</TD> <TD>JNO</TD>
+	</TR>
+
+	<TR>
+    <TD>JPE, JP</TD> <TD>如果是偶数，转移</TD> <TD>&nbsp;PF = 1</TD> <TD>JPO</TD>
+	</TR>
+
+	<TR>
+    <TD>JNZ , JNE</TD> <TD>如果不为0（不相等），转移</TD> <TD>&nbsp;ZF = 0</TD> <TD>JZ, JE</TD>
+	</TR>
+
+	<TR>
+    <TD><NOBR>JNC , JNB, JAE</NOBR></TD> <TD>如果没有进位(大于, 大于等于)，转移</TD>
+    <TD>&nbsp;CF = 0</TD> <TD>JC, JB, JNAE</TD>
+	</TR>
+
+	<TR>
+    <TD>JNS</TD> <TD>如果不是负数，转移</TD> <TD>&nbsp;SF = 0</TD> <TD>JS</TD>
+	</TR>
+
+	<TR>
+    <TD>JNO</TD> <TD>如果没有溢出，转移</TD> <TD>&nbsp;OF = 0</TD> <TD>JO</TD>
+	</TR>
+
+	<TR>
+    <TD>JPO, JNP</TD> <TD>如果不是偶数，转移</TD> <TD>&nbsp;PF = 0</TD> <TD>JPE, JP</TD>
+	</TR>
+
+	</TABLE>
+
+	</FONT>
+
+	<BR><BR>
+	可以看到一些指令功能相同，对，他们编译之后生成<br>
+<br>
+相同机器码所以很容易理解为什么你编译 <B>JE</B> 指令<br>
+<br>
+而反编译得到的却是<B>JZ</B>.使用不同的名称是为了使程序更容易理解。<BR><BR>
+
+	<B>比较有符号数的转移指令</B><BR><BR>
+
+	<FONT FACE="Fixedsys">
+
+	<TABLE BORDER=1 CELLPADDING=7>
+	<TR>
+	<TD BGCOLOR=yellow>指令</TD> <TD BGCOLOR=yellow>说明</TD>
+	<TD BGCOLOR=yellow>条件</TD>
+	<TD BGCOLOR=yellow>相反指令</TD>
+	</TR>
+
+	<TR>
+    <TD>JE , JZ</TD> <TD>如果等于 (<FONT COLOR=red>=</FONT>)，如果为0，跳转</TD>
+                           <TD ALIGN=Center>ZF = 1</TD> <TD>JNE, JNZ</TD>
+	</TR>
+
+	<TR>
+    <TD>JNE , JNZ</TD> <TD>如果不等于 (<FONT COLOR=red><></FONT>)，如果不等于0，跳转</TD>
+                           <TD ALIGN=Center>ZF = 0</TD> <TD>JE, JZ</TD>
+	</TR>
+
+	<TR>
+    <TD>JG , JNLE</TD> <TD>如果大于 (<FONT COLOR=red>></FONT>) 如果不小于等于 <NOBR>(<FONT COLOR=red>not &lt;=</FONT>)，跳转</NOBR></TD>
+                           <TD ALIGN=Center>ZF = 0<BR>和<BR>SF = OF</TD> <TD>JNG, JLE</TD>
+	</TR>
+
+	<TR>
+    <TD>JL , JNGE</TD> <TD>如果小与Jump if Less (<FONT COLOR=red><</FONT>) 如果不大于等于 <NOBR>(<FONT COLOR=red>not >=</FONT>)，跳转</NOBR></TD>
+                           <TD ALIGN=Center>SF &lt;> OF</TD> <TD>JNL, JGE</TD>
+	</TR>
+
+	<TR>
+    <TD>JGE , JNL</TD> <TD><NOBR>如果大于等于 (<FONT COLOR=red>>=</FONT>)，</NOBR>如果不小于  (<FONT COLOR=red>not &lt;</FONT>)，跳转</TD>
+                           <TD ALIGN=Center>SF = OF</TD> <TD>JNGE, JL</TD>
+	</TR>
+
+
+	<TR>
+    <TD>JLE , JNG</TD> <TD><NOBR>如果小于等于 (<FONT COLOR=red>&lt;=</FONT>)，</NOBR>如果不大于  <NOBR>(<FONT COLOR=red>not ></FONT>)，跳转</NOBR></TD>
+                           <TD ALIGN=Center>ZF = 1<BR>或者<BR>SF <> OF</TD> <TD>JNLE, JG</TD>
+	</TR>
+
+	</TABLE>
+
+	</FONT>
+
+	<BR><BR>
+
+	<FONT FACE="Fixedsys">&lt;></FONT> - 符号表示不等于.
+
+
+<BR><BR><BR>
+
+	<B>比较无符号数转移指令</B><BR><BR>
+
+	<FONT FACE="Fixedsys">
+
+	<TABLE BORDER=1 CELLPADDING=7>
+	<TR>
+	<TD BGCOLOR=yellow>指令</TD> <TD BGCOLOR=yellow>说明</TD>
+	<TD BGCOLOR=yellow>条件</TD>
+	<TD BGCOLOR=yellow>相反指令</TD>
+	</TR>
+
+	<TR>
+    <TD>JE , JZ</TD> <TD>如果等于 (<FONT COLOR=red>=</FONT>).，如果为0，跳转</TD>
+                           <TD ALIGN=Center>ZF = 1</TD> <TD>JNE, JNZ</TD>
+	</TR>
+
+	<TR>
+    <TD>JNE , JNZ</TD> <TD>如果不等于(<FONT COLOR=red><></FONT>)，如果不为0，跳转</TD>
+                           <TD ALIGN=Center>ZF = 0</TD> <TD>JE, JZ</TD>
+	</TR>
+
+	<TR>
+    <TD>JA , JNBE</TD> <TD>如果大于 (<FONT COLOR=red>></FONT>)，如果不小于等于<NOBR>(<FONT COLOR=red>not &lt;=</FONT>)，跳转</NOBR></TD>
+                           <TD ALIGN=Center>CF = 0<BR>and<BR>ZF = 0</TD> <TD>JNA, JBE</TD>
+	</TR>
+
+
+	<TR>
+    <TD><NOBR>JB , JNAE, JC</NOBR></TD> <TD>如果小于  (<FONT COLOR=red>&lt;</FONT>)，如果不大于等于<NOBR>(<FONT COLOR=red>not >=</FONT>)，如果进位，跳转</NOBR></TD>
+                           <TD ALIGN=Center>CF = 1</TD> <TD>JNB, JAE, JNC</TD>
+	</TR>
+
+
+	<TR>
+    <TD><NOBR>JAE , JNB, JNC</NOBR></TD> <TD>如果大于等于(<FONT COLOR=red>>=</FONT>)，如果不小于 <NOBR>(<FONT COLOR=red>not &lt;</FONT>)，如果没有进位，跳转</NOBR></TD>
+                           <TD ALIGN=Center>CF = 0</TD> <TD>JNAE, JB</TD>
+	</TR>
+
+
+	<TR>
+    <TD><NOBR>JBE , JNA</NOBR></TD> <TD>如果小于或者等于(<FONT COLOR=red>&lt;=</FONT>)，如果不大于 <NOBR>(<FONT COLOR=red>not ></FONT>)，跳转</NOBR></TD>
+                           <TD ALIGN=Center>CF = 1<BR>or<BR>ZF = 1</TD> <TD>JNBE, JA</TD>
+	</TR>
+
+	</TABLE>
+
+	</FONT>
+
+
+	<BR>一般来说，需要使用<B>CMP</B>指令来比较数值（该指令与 <B>SUB</B>(减法)<p>指令相近，只不过不保存结果，而只修改标值位）<BR>
+	<br>
+上面说法的意思是，例如：<br>
+<br>
+需要比较5 和2， 5－2 ＝3<br>
+<br>
+结果不是0（0标值位设置为 0）<br>
+<br>
+另一个例子<br>
+<br>
+比较 7和7<br>
+
+	<BR>
+    <FONT FACE="Fixedsys">7 - 7 = 0<br>
+</FONT><BR>
+    结果为0！ (0标值位<FONT FACE="Fixedsys">设置为1</FONT>。 <B>JZ</B> 或者 <B>JE</B> 会转移).
+
+	<BR><BR>
+ 下面是一个<B> CMP </B>指令和条件转移指令的例子：<BR>
+
+</p>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+include emu8086.inc
+include emu8086.inc
+
+ORG 100h
+
+MOV AL, 25 ; 设置AL为 25.
+MOV BL, 10 ; 设置BL为10.
+
+CMP AL, BL ; 比较 AL - BL.
+
+JE equal ; 如果 AL = BL (ZF = 1) 跳转
+
+PUTC 'N' ; 如果到这里，说明 AL &lt;&gt; BL,
+JMP stop ; 打印'N', 跳转到结束
+
+equal: ; 如果到这里
+PUTC 'Y' ; 则 AL = BL,打印'Y'.
+
+stop:
+
+RET 
+
+END</FONT></PRE>
+</TD></TR></TABLE>
+
+<BR><BR>
+<br>
+请用用不同的数字试验取代上述 <B>AL</B> 和 <B>B</B><B>L</B>，点击[<B>FLAGS</B>]键<br>
+<br>
+打开标志，使用[<B>Single Step</B>]观察发生了什么，不要忘记<br>
+<br>
+每一次修改之后重新编译运行（快捷键<B>F5</B>）。<BR>
+
+<HR>
+
+<BR>
+全部的条件转移指令都有一个很大的限制，就是与 <B>JMP </B>指令<br>
+<br>
+不同，他们只能向前跳转<b>127</b>字节或者向后跳转<b>128</b>字节（注意<br>
+<br>
+大多数指令编译之后是3个或者更多字节）<br>
+<br>
+我们可以用如下小技巧解决这一问题：<BR><BR>
+　<UL>
+		<LI>从上述表中找到一条相反条件的转移指令，令其跳转到 <I>label_x</I>.
+			 <BR><BR></LI>
+		<LI>用<B>JMP</B>指令跳转到你想要的地方<BR><BR></LI>
+		<LI>在<B>JMP</B>指令后面定义<I>label_x:</I><BR><BR></LI>
+		</UL>
+
+		<I>label_x:</I> - 可以是任意合法标号.
+
+		<BR><BR>
+
+		下面是一个例子:<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE>include emu8086.inc
+
+ORG 100h
+
+MOV AL, 25 ; 设置 AL 为 25.
+MOV BL, 10 ; 设置 BL 为 10.
+
+CMP AL, BL ; 比较 AL - BL.
+
+
+JNE not_equal ; 如果 AL &lt;&gt; BL (ZF = 0)，转移
+JMP equal
+not_equal:
+
+
+; 假定这里还有编译之后超过127字节的程序
+
+
+PUTC 'N' ; 如果执行到这里，说明 AL &lt;&gt; BL,
+JMP stop ; 打印 'N', 转移到程序结束。
+
+equal: ; 如果执行到这里，
+PUTC 'Y' ; 说明 AL = BL, 打印 'Y'.
+
+stop:
+
+RET ; 上述都要执行这一条
+
+END</PRE>
+</TD></TR></TABLE>
+
+</LI>
+
+
+</UL>
+
+<BR><BR>
+
+<HR>
+
+另外，可以使用立即数来代替标号。立即数前使用“$”<br>
+<br>
+编译器将直接得到偏移。例如:<BR><BR>
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE>ORG 100h
+
+; 无条件向前转移
+; 跳过后面2字节
+JMP $2
+a DB 3 ; 1 byte.
+b DB 4 ; 1 byte.
+
+; JCC 跳过 7 字节:
+; (JMP 本身占用 2 字节)
+MOV BL,9
+DEC BL ; 2 bytes.
+CMP BL, 0 ; 3 bytes.
+JNE $-7
+
+RET
+
+END</PRE>
+</TD></TR></TABLE>
+
+<BR><BR><BR>
+
+<HR>
+<CENTER>
+<A HREF="asm_tutorial_06.html"><B> &lt;&lt;&lt; 前一部分 &lt;&lt;&lt; </B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="asm_tutorial_08.html"><B> >>> 后一部分 >>> </B></A>
+</CENTER>
+<HR>
+
+
+
+<BR>
+
+</FONT>
+
+
+</TD></TR>
+</TABLE>
+
+
+</BODY>
+
+</HTML>

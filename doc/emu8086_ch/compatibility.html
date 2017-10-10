@@ -1,0 +1,164 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>MASM / TASM compatibility</TITLE>
+
+<META name="description" content="MASM / TASM compatibility">
+
+<META name="keywords" content="MASM, TASM, compatibility">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+<FONT FACE="Verdana" SIZE=3>
+
+<FONT SIZE=+2>
+<B>MASM / TASM compatibility</B>
+</FONT>
+
+<BR><BR><BR>
+
+Syntax of <I>Emu8086</I> is fully compatible with all major assemblers including
+<I>MASM</I> and <I>TASM</I>; &nbsp; though some directives are unique to <I>Emu8086</I>.
+ &nbsp;
+If required to compile using any other assembler you may need to comment out
+these directives, and any other directives that start with a '<B>#</B>' sign:
+
+<PRE><FONT FACE="Fixedsys">#MAKE_COM#
+#MAKE_EXE#
+#MAKE_BIN#
+#MAKE_BOOT#</FONT></PRE>
+
+<BR>
+<HR>
+<BR>
+
+<I>Emu8086</I> does not support the <B>ASSUME</B> directive, actually most
+programmers agree that this directive just
+causes some mess in your code. &nbsp; Manual attachment of <B>CS:</B>, <B>DS:</B>, <B>ES:</B>
+or <B>SS:</B> segment prefixes is preferred, and required by <I>Emu8086</I> when data is
+in segment other then <B>DS</B>. For example:
+<PRE><FONT FACE="Fixedsys">MOV AX, [BX]        ; same as MOV AX, DS:[BX]
+MOV AX, ES:[BX]</FONT></PRE>
+<BR>
+
+<HR>
+<BR>
+
+<I>Emu8086</I> does not require to define segment when you compile
+a <B>COM</B> file, though <I>MASM</I> and <I>TASM</I> may require this,
+for example:<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+CSEG    SEGMENT     ; code segment starts here.
+
+; #MAKE_COM#        ; uncomment for Emu8086.
+
+ORG 100h
+
+start:  MOV AL, 5   ; some sample code...
+        MOV BL, 2
+        XOR AL, BL
+        XOR BL, AL
+        XOR AL, BL
+
+        RET
+
+CSEG    ENDS        ; code segment ends here.
+
+END     start       ; stop compiler, and set entry point.</FONT></PRE>
+</TD></TR></TABLE>
+
+<BR><BR>
+
+Entry point for <B>COM</B> file should always be at <B>0100h</B> (first instruction after
+<B>ORG 100h</B> directive), though in <I>MASM</I> and <I>TASM</I> you may need to manually
+set an entry point using <B>END</B> directive.
+<I>Emu8086</I> works just fine, with or without it.
+
+<BR><BR>
+In order to test the above code, save it into <B>test.asm</B> file (or any other) and run these
+commands from command prompt:<BR><BR>
+
+For MASM 6.0:<PRE><FONT FACE="Fixedsys">  MASM test.asm
+  LINK test.obj, test.com,,, /TINY
+</FONT></PRE>
+
+For TASM 4.1:<PRE><FONT FACE="Fixedsys">  TASM test.asm
+  TLINK test.obj /t
+</FONT></PRE>
+
+We should get <B>test.com</B> file (11 bytes), right click it and select <B><NOBR>Send To</NOBR></B> and <B>emu8086</B>.
+You can see that the disassembled code doesn't contain any directives and it is identical
+to code that <I>Emu8086</I> produces even without all those tricky directives.
+
+<BR><BR>
+
+<HR>
+
+<BR>
+
+A template used by <I>Emu8086</I> to create <B>EXE</B> files is fully compatible
+with <I>MASM</I> and <I>TASM</I>, just comment out <B>#MAKE_EXE#</B> directive
+to avoid <B>Unknown character</B> error at line <B>11</B>.
+
+<BR><BR>
+
+<B>EXE</B> files produced by <I>MASM</I> are identical to those produced by <I>emu8086</I>.
+ &nbsp;
+<I>TASM</I> does not calculate the checksum, and has slightly different EXE file structure, but it
+produces quite the same machine code.
+
+<BR><BR>
+<B>Note: </B> there are several ways to encode the same machine instructions for the 8086 CPU,
+so generated machine code may vary when compiled on different compilers.
+
+
+<BR><BR>
+
+<HR>
+
+<BR>
+<I>Emu8086</I> assembler supports shorter versions of <B>BYTE PTR</B> and <B>WORD PTR</B>,
+these are: <B>B.</B> and <B>W.</B><BR><BR>
+
+For <I>MASM</I> and <I>TASM</I> you have to replace <B>B.</B> and <B>W.</B> with
+<B>BYTE PTR</B> and <B>WORD PTR</B> accordingly.<BR><BR>
+
+For example:
+<PRE><FONT FACE="Fixedsys">LEA BX, var1
+MOV WORD PTR [BX], 1234h ; works everywhere.
+MOV w.[BX], 1234h        ; same instruction, but works in Emu8086 only.
+HLT
+
+var1  DB  0
+var2  DB  0
+</FONT></PRE>
+
+
+
+<HR>
+
+<BR><BR>
+
+</FONT>
+
+</TD></TR>
+</TABLE>
+
+
+
+<BR>
+
+
+
+</BODY>
+
+</HTML>

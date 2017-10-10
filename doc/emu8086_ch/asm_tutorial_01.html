@@ -1,0 +1,255 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 1)</TITLE>
+
+<META name="description" content="What is an assembly language?">
+
+<META name="keywords" content="emu8086, 8086, tutorial, programming, assembler tutorial, tutorial for begginers">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<FONT SIZE=+1>
+<B>8086汇编语言初学者教程（第一部分）</B></FONT><BR><BR>
+本教程是为从未接触过汇编语言的或者略知一二的朋友编写的。</FONT><p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+当然，如果你有其他语言基础(Basic, C/C++, Pascal...) 更</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+好。但是，即使你熟悉汇编语言，最好也将本文通读以便熟悉</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+Emu8086 标记。</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+这里假定您已经掌握了关于数制的知识（十六进制／二进制），</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+如果目前还没有，在进行下面内容之前，请参考</FONT><font face="Verdana">上一章节</font><FONT FACE="Verdana" SIZE=3>
+
+
+<A HREF="numbering_systems_tutorial.html"><B>进制</B></A>。</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<BR>
+
+<BR>
+
+<FONT SIZE=+2><B>什么是汇编语言？</B></FONT><BR>
+
+　</FONT></p>
+<p>
+
+
+
+<font face="Verdana">&nbsp;</font><FONT FACE="Verdana" SIZE=3>&nbsp;&nbsp;&nbsp; 
+汇编语言是底层编程语言。为了学习这门语言，你需要对于</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+计算机结构有所了解。计算机系统模型如下：</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<IMG SRC="model.gif" width="382" height="241">
+
+</FONT>
+
+
+
+</p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<b>系统总线 system bus</b>（图中黄色部分）是将计算机各个</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+部分连接到一起的部件。</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<b>CPU</b>是计算机的心脏，大部分的运算都是在CPU中完成的。</FONT></p>
+<p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<b>RAM</b>是读取并且存放将要执行的程序的地方。<BR> <BR>
+
+<FONT SIZE=+2><B>CPU内部</B></FONT>
+<BR><BR>
+
+<IMG SRC="cpu.gif" width="540" height="284"><BR><BR>
+
+<U><B>通用寄存器</B></U><BR><BR>
+8086CPU有8个通用寄存器，每一个寄存器都有自己的名称：</FONT></p>
+
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<UL>
+<LI>	<b>AX</b> 累加寄存器 accumulator register（分为 <b>AH / AL</b>）.</LI>
+<LI>	<b>BX</b> 基址寄存器 base address register （分为 <b>BH / BL</b>）.</LI>
+<LI>	<b>CX</b> 计数寄存器 count register（分为 <b>CH / CL</b> ）.</LI>
+<LI>	<b>DX</b> 数据寄存器 data register （分为 <b>DH / DL</b>）.</LI>
+<LI>	<b>SI</b> 源变址寄存器 source index register.</LI>
+<LI>	<b>DI</b> 目的变址寄存器 destination index register. </LI>
+<LI>	<b>BP</b> 基址指针寄存器 base pointer. </LI>
+<LI>	<b>SP</b> 堆栈寄存器 stack pointer. </LI>
+</UL>
+编程中，由程序员决定通用寄存器的具体用途。寄存器的主要目<p>的是保存数值（变量）。上面提到的寄存器是16位的，意思是:</p>
+<p>&nbsp;<b>0011000000111001b</b> （二进制），或者<b>12345</b></p>
+<p><b>&nbsp;</b>(十进制形式)。</p>
+<p>
+<BR>
+4个通用寄存器(AX, BX, CX, DX) 在使用时分为两个8位</p>
+<p>寄存器，例如 假设AX=
+<B><FONT COLOR=RED>00110000</FONT><FONT COLOR=BLUE>00111001</FONT>b</B>，</p>
+<p>AH=<B><FONT COLOR=RED>00110000</FONT>b </B>AL=<B><FONT COLOR=BLUE>00111001</FONT>b</B>。当你修改其中任</p>
+<p>意8位值，整个16位寄存器的值同样改变。同样对于其他的3</p>
+<p>个寄存器，“H”表示高8位，“L”表示低8位。</p>
+<p>寄存器在CPU内部，访问中它们速度远远超过内存。因为，</p>
+<p>访问内存需要经过系统总线，所以时间要长一些。而访问</p>
+<p>寄存器中的数据几乎不需要时间。于是，编程中，应当尽量</p>
+<p>在寄存器中保存数据。虽然寄存器很小，并且这些寄存器都</p>
+<p>有具体用途，但他们依然是存放计算中临时数据的好地方。<BR>
+<BR>
+<U><B>段寄存器</B></U><BR><BR>
+
+</p>
+
+<UL>
+<LI>	<B>CS</B> 代码段寄存器，用来存放当前正在运行的指令</LI>
+<LI>	<B>DS</B> 数据段寄存器，用来存放当前运行程序所用的数据</LI>
+<LI>	<B>ES</B> 附加段寄存器，由程序员决定用途</LI>
+<LI>	<B>SS</B> 堆栈段寄存器，指出堆栈所在区域</LI>
+</UL>
+
+尽管容许在段寄存器中存放任何数据，但是这决不是<p>一个好主意。段寄存器有着非常特别的目的－－指出</p>
+<p>可以访问内存块的地址。<BR><BR>
+段寄存器与通用寄存器协同工作就可以访问任意的内存</p>
+<p>区域。例如，如果我们打算访问物理地址是<b>12345h</b></p>
+<p>（十六进制）的内存单元，我们应设置<b>DS = 1230h </b></p>
+<p><b>SI = 0045h</b> 这样以来，我们便能访问超过一个寄存器</p>
+<p>（16位）所能表示的内存地址的范围。CPU计算物理地址</p>
+<p>的方法是将段寄存器乘以10H在加上一个特定的通用</p>
+<p>寄存器。(1230h * 10h + 45h = 12345h):</p>
+<p>
+<IMG SRC="effective_address.gif" width="63" height="75">
+
+<BR>
+这种，由两个寄存器生成的地址被称为<b>有效地址</b> </p>
+<p>（effective address）</p>
+<p>默认下，<b>BX</b>, <b>SI </b>及 <b>DI</b> 与<b> DS</b>协同工作，<b>BP SP</b> </p>
+<p>与 <b>SS</b> 寄存器协同工作。</p>
+<p>其余的通用寄存器不能形成有效地址！同样，尽管</p>
+<p><b>BX</b>可以形成有效地址，但是<b>BH BL</b>不能！</p>
+<p>
+<U><B>控制寄存</B></U><BR><BR>
+
+</p>
+
+<UL>
+<LI>	<b>IP</b> 指令指针寄存器 instruction pointer</LI>
+<LI>	<b>Flags Register</b> 状态标志寄存器</LI>
+</UL>
+<br>
+<b>IP</b> 始终同<b>CS </b>协同工作，指出当前执行的指令。<p><b>Flags Register </b>完成一次数学运算后，由CPU自动</p>
+<p>修改，通过它可以得到当前结果类型，也可以作为跳转</p>
+<p>语句条件。通常你无法直接访问它们。<BR>
+<BR><BR>
+
+</p>
+
+<HR>
+<CENTER>
+<A HREF="asm_tutorial_02.html"><B> >>> 下一部分 >>> </B></A>
+</CENTER>
+<HR>
+
+
+
+<BR>
+
+</FONT>
+
+
+
+</TD></TR>
+</TABLE>
+
+
+</BODY>
+
+</HTML>

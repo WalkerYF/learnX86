@@ -1,0 +1,431 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>Numbering Systems Tutorial</TITLE>
+
+<META name="description" content="Numbering Systems Tutorials">
+
+<META name="keywords" content="numbering systems tutorial, 8086, hex, oct, bin, binary, hexadecimal, octal, ocatal">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<FONT FACE="Verdana" SIZE=3>
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+<FONT SIZE=+2>
+<B>基础知识</B></FONT><BR>
+
+<HR>
+<BR>
+<FONT SIZE=+2><B>什么是进制？</B></FONT>
+<BR><BR>
+<!--
+There are many ways to represent the same numeric value, previously
+homo sapiens was using sticks to count, so number 5 was represented as:<BR>
+<B>&nbsp;&nbsp; | &nbsp;&nbsp; | &nbsp;&nbsp; | &nbsp;&nbsp; | &nbsp;&nbsp; |</B><BR>
+(five sticks).
+<BR><BR>
+Using sticks to count isn't a good idea, modern decimal system is much better,
+don't you think?
+-->
+
+
+对于同一个数字有很多表示方式。很久很久以前人们用棍子<br>
+<br>
+计数，后来学会在地上画棍子，最终画在纸上．比如：<br>
+<br>
+｜｜｜｜｜（５根棍子）<br>
+<br>
+罗马人使用不同的符号表示棍子数目：｜｜｜仍然表示３根<br>
+<br>
+棍子，而用V表示５根棍子用X表示１０根～<br>
+<br>
+在当时，使用棍子计数是伟大的发明．用符号代替棍子更是<br>
+<br>
+如此．如今采用十进制系统表示数字是最好的方法之一．之所以<br>
+<br>
+这样说是因为它实现了用符号表示＂没有＂这一重要思想（３个XX?）<br>
+<br>
+１５００年前的印度，零（０）第一次被看作一个数字．<br>
+<br>
+稍后，这一概念在中东阿拉伯地区使用，最终传播到西方拉美国家。<br>
+<br>
+在下面的学习中，你会逐渐认识到这个思想对于现代数字系统是多么<br>
+<br>
+重要。<BR><BR>
+<HR>
+<BR>
+<FONT SIZE=+2><B>十进制系统</B></FONT><BR><BR>
+
+<!--We, humans use decimal representation to count.
+In decimal system there are 10 digits:-->
+
+目前使用最多的是十进制．十进制系统有１０个数字<br>
+<br>
+０，１，２，３，４，５，６，７，８，９<br>
+<br>
+利用这些数字能表示任何数值，例如<br>
+<br>
+７５４<br>
+<br>
+这些数字是由每一位数字乘以“基数”的幂累加而成的<br>
+<br>
+（上一个例子中基数是10 因为十进制中有十个数字）。<br>
+<br>
+<BR><BR>
+<!-- 7 * 10^2 + 5 * 10^1 + 4 * 10^0  =  700 + 50 + 4 = 754 -->
+<IMG SRC="num1.gif" width="448" height="108">
+<BR><BR>
+位置对于每一个数字是很重要的。例如，你将上一个例子<br>
+<br>
+中的“7”放到结尾：547<br>
+<br>
+数值就成为：<BR><BR>
+<!-- 5 * 10^2 + 4 * 10^1 + 7 * 10^0  =  500 + 40 + 7 = 547 -->
+<IMG SRC="num2.gif" width="448" height="108">
+
+<BR><BR>
+<b><font size="4">特别提醒</font></b>：任何数字的0次幂都是1，0的0次幂也是1<BR>
+<IMG SRC="num3.gif" width="306" height="60">
+
+<BR><BR>
+
+<HR>
+<BR>
+<FONT SIZE=+2><B>二进制</B></FONT><BR><BR>
+计算机没有人类聪明（至少现在是这样），制造一个只有<br>
+<br>
+开关或者称为 0，1 两种状态的电子机器很容易。计算机<br>
+<br>
+使用二进制系统，只有两个数字
+<BR><BR>
+<B>0, 1</B><BR><BR>
+
+基地为2<br>
+<br>
+每一位二进制数称作一位（BIT），4 BIT 组成一个半字节（NIBBLE），<br>
+<br>
+8BIT组成一个字节（BYTE），两个字节组成一个字（WORD），两个字<br>
+<br>
+组成一个双字（DOUBLE WORD）（很少使用）：<BR>
+<BR>
+<IMG SRC="num4.gif" width="339" height="126">
+
+<BR><BR>
+习惯上在一串二进制后面加上“b”，这样，我们可以知道101b是二进制<br>
+<br>
+表示十进制的5。<br>
+<br>
+二进制<b>10100101b</b>表示十进制的165，计算方法如下：<BR><BR>
+
+<!--
+10100101b =
+ =  1 * 2^7 + 0 * 2^6 + 1 * 2^5 + 0 * 2^4 + 0 * 2^3 + 1 * 2^2 + 0 * 2^1 + 1 * 2^0 =
+ =  128     + 0       + 32      + 0       + 0       + 4       + 0       + 1 = 165
+-->
+
+<IMG SRC="num5.gif" width="681" height="179">
+
+
+<BR><BR>
+
+<HR>
+<BR>
+<FONT SIZE=+2><B>十六进制系统</B></FONT><BR><BR>
+十六进制系统使用16个数字<BR><BR>
+<B>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F</B><BR><BR>
+
+<b>基底</b>是 <B>16</B>.
+<BR><BR>
+十六进制非常紧凑，便于阅读。将二进制转换为十六进制<br>
+<br>
+很容易，半字节（4bits） 对应一位十六进制如下表<BR><BR>
+<A NAME="hextable">&nbsp;</A>
+<TABLE BORDER=0 COLS=2 CELLSPACING=10>
+
+<TR>
+<TD>
+			<TABLE BORDER=1 COLS=3>
+
+			<TR>
+			<TD><B>Decimal<BR>(base 10)</B></TD>
+			<TD><B>Binary<BR>(base 2)</B></TD>
+			<TD><B>Hexadecimal<BR>(base 16)</B></TD>
+			</TR>
+
+			<TR>
+			<TD>0</TD> <TD>0000</TD> <TD>0</TD>
+			</TR>
+
+			<TR>
+			<TD>1</TD> <TD>0001</TD> <TD>1</TD>
+			</TR>
+
+			<TR>
+			<TD>2</TD> <TD>0010</TD> <TD>2</TD>
+			</TR>
+
+			<TR>
+			<TD>3</TD> <TD>0011</TD> <TD>3</TD>
+			</TR>
+
+			<TR>
+			<TD>4</TD> <TD>0100</TD> <TD>4</TD>
+			</TR>
+
+			<TR>
+			<TD>5</TD> <TD>0101</TD> <TD>5</TD>
+			</TR>
+
+			<TR>
+			<TD>6</TD> <TD>0110</TD> <TD>6</TD>
+			</TR>
+
+			<TR>
+			<TD>7</TD> <TD>0111</TD> <TD>7</TD>
+			</TR>
+
+			<TR>
+			<TD>8</TD> <TD>1000</TD> <TD>8</TD>
+			</TR>
+
+			<TR>
+			<TD>9</TD> <TD>1001</TD> <TD>9</TD>
+			</TR>
+
+			<TR>
+			<TD>10</TD> <TD>1010</TD> <TD>A</TD>
+			</TR>
+
+			<TR>
+			<TD>11</TD> <TD>1011</TD> <TD>B</TD>
+			</TR>
+
+			<TR>
+			<TD>12</TD> <TD>1100</TD> <TD>C</TD>
+			</TR>
+
+			<TR>
+			<TD>13</TD> <TD>1101</TD> <TD>D</TD>
+			</TR>
+
+			<TR>
+			<TD>14</TD> <TD>1110</TD> <TD>E</TD>
+			</TR>
+
+			<TR>
+			<TD>15</TD> <TD>1111</TD> <TD>F</TD>
+			</TR>
+
+			</TABLE>
+
+</TD>
+<TD>
+<IMG SRC="num7.gif" width="269" height="126">
+</TD>
+
+</TR>
+
+</TABLE>
+
+<BR><BR>
+习惯上我们在一个十六进制数的后面加上 <B>"h"</B>，以便和其他进制区别, 这样我们就知道 5Fh是一个十六进制数表示十进制的&nbsp; 
+95。习惯上，我们也在以字母开头（从Ａ到Ｆ）的十六进制数前面<p>加上<FONT FACE="Verdana" SIZE=3><B>"0"　例如：</B></FONT>
+
+<B>0E120h</B>.
+
+<BR><BR>
+十六进制 <B>1234h</B>&nbsp; 等于　4660:<BR><BR>
+<!--
+1 * 16^3 + 2 * 16^2 + 3 * 16^1 + 4 * 16^0 = 4096 + 512 + 48 + 4 = 4660
+-->
+<IMG SRC="num6.gif" width="592" height="134">
+
+<BR><BR>
+
+
+</p>
+
+
+<HR>
+<BR>
+<FONT SIZE=+2><B>十进制到另外进制的换算</B></FONT>
+
+<BR><BR>
+
+在换算中，将十进制数不断除以目标进制的基底，每一次都要记录下<b>商</b>和<b>余数</b>，直到商０。<p><b>余数</b>用来表示结果。<BR>
+
+<BR><BR>
+
+下面是一个十进制３９（基底是１０）到十六进制（基底是１６）的换算：<BR><BR>
+
+<IMG SRC="num8.gif" width="420" height="185">
+
+<BR>　</p>
+<p>结果为　<B>27h</B>.<BR>
+上例中所有的余数都小于１０，不必使用字母。</p>
+<p>再举一个更复杂的例子：<BR>
+十进制 <B>43868</B> 换算为十六进制：<BR><BR>
+
+<IMG SRC="num9.gif" width="419" height="310">
+
+<BR><BR>
+结果是 <B>0AB5Ch</B>, 使用 <A HREF="#hextable">上面提到的表</A> 将大于９的数字替换成字母。
+
+<BR>　</p>
+<p>运用同样的原理，我们可以换算为二进制（用２作除数），或者是先换算成十六进制，再用</p>
+<p>
+
+<FONT FACE="Verdana" SIZE=3>
+
+<A HREF="#hextable">上面的表</A>　换算成二进制：</FONT><BR>
+<BR>
+
+<IMG SRC="num10.gif" width="233" height="88">
+
+<BR><BR>
+于是，得到二进制： <B>1010101101011100b</B>
+
+<BR><BR>
+
+</p>
+
+<HR>
+<BR>
+<FONT SIZE=+2><B>有符号数</B></FONT>
+
+<BR>　<p>对于十六进制数<FONT FACE="Verdana" SIZE=3><B>　0FFh　</B>无法确定它是正数还是负数，因为它可以表示十进制的&quot;<B>255</B>" 
+
+</FONT>
+
+</p>
+<p>
+
+<FONT FACE="Verdana" SIZE=3>
+
+或者　 "<B>- 1</B>&quot;。</FONT><BR>
+
+８位可以表示<b>２５６</b>个状态，于是，我们可以假定前<b>１２８</b>个表示正数<FONT FACE="Verdana" SIZE=3>(<B>从0到127</B>)</FONT>，接</p>
+<p>下来的１２８个<FONT FACE="Verdana" SIZE=3>数(<B>从128到256</B>)表示</FONT>负数<FONT FACE="Verdana" SIZE=3>
+
+。</FONT><BR>
+
+<BR>如果想表示<FONT FACE="Verdana" SIZE=3>&quot;<B>- 5</B>&quot;，我们从２５６中减去５，即　 <NOBR><B>256 - 5 = 251</B></NOBR>。</FONT><BR>
+用这种复杂的方法表示一个负数有着数学依据的，数学上<FONT FACE="Verdana" SIZE=3>&quot;<B>- 5</B>&quot; 加上 "<B>5</B>&quot;等于０。</FONT><BR>
+
+当我们将两个８位的数字　<FONT FACE="Verdana" SIZE=3><B>5</B> 和　<B>251</B>相加时，结果超过２５５，溢出处理为０！</FONT><BR>
+<BR><BR>
+
+<IMG SRC="num11.gif" width="271" height="191">
+
+<BR>　</p>
+<p>
+
+<FONT FACE="Verdana" SIZE=3>
+
+<B>128到256</B>高位始终是<b>１，</b>这个可以作为数字符号的标记</FONT><BR>
+对于字（１６位），１６位有<FONT FACE="Verdana" SIZE=3><B>65536</B>个状态，头３２７６８个状态(<B>从0到32767</B>)用来</FONT></p>
+<p>表示正数，下面的３２７６８个状态<FONT FACE="Verdana" SIZE=3>(<B>从32767到65535</B>) 表示负数。</FONT><BR><BR>
+　</p>
+
+<HR>
+
+<FONT FACE="Verdana" SIZE=3>
+
+<I>Emu8086　</I>带有数制转换工具，也可以计算各种数值表达式。选择菜单</FONT>
+
+<B>Math</B> 项:
+
+<BR><BR>
+
+<IMG SRC="num12.gif" width="555" height="382">
+
+<BR><BR>
+
+<B>Number Convertor</B> （数制转换）可以实现任意数制之间的转换。在文本框中填写源<p>数值，将自动转换到任意的数制。 可以作 <B>8 
+位</B> 或者 <B>16 位</B>转换。</p>
+<p><BR>
+
+<B>Expression Evaluator（表达式计算）</B>可以用来计算不同数制的计算以及从一个进制</p>
+<p>到另一个进制的转换。输入表达式，按下回车，结果就会以你选定的进制表示。最长可以</p>
+<p>进行３２位的计算。当在<FONT FACE="Verdana" SIZE=3><B>Signed</B>打钩选中时（除了八进制和双字），最前面的一位将被认</FONT></p>
+<p>
+
+<FONT FACE="Verdana" SIZE=3>
+
+作是符号位。这样以来，<B>0FFFFFFFFh　</B>将被认为是十进制的　<b>－１</b>。</FONT></p>
+<p>例如，你计算　<FONT FACE="Verdana" SIZE=3><FONT FACE="Fixedsys"><NOBR>0FFFFh * 10h + 0FFFFh</NOBR></FONT> 
+( 8086 CPU所能访问的最大内存地址)。如果你选中</FONT></p>
+<p>
+
+<FONT FACE="Verdana" SIZE=3>
+
+<B>Signed</B> 和 <B>Word　</B>选项，结果是　<FONT FACE="Fixedsys">-17　（因为表达式被认为是　<NOBR>(-1) * 16 + (-1) </NOBR>
+）。如果</FONT></FONT></p>
+
+</FONT>
+
+<FONT FACE="Fixedsys" SIZE=3>
+
+<p>想按照无符号数计算，请不要选择<FONT FACE="Verdana" SIZE=3><B>　Signed　</B>表达式为<B>　</B><FONT FACE="Fixedsys"><NOBR>65535 * 16 + 65535　</NOBR></FONT>计算结果将是</FONT></p>
+<p> <FONT FACE="Fixedsys" SIZE="3">1114095</FONT></FONT><FONT FACE="Verdana" SIZE=3><BR>
+同样你可以使用<B>Number Convertor</B>将非十进制换算为有<b>符号的十进制</b>，然后根据十进制</FONT></p>
+<p><font face="Verdana">计算</font><FONT FACE="Verdana" SIZE=3>。<BR><BR>
+支持如下运算:<BR>
+</p>
+<PRE><FONT FACE="Fixedsys">
+~       not　 (inverts all bits).
+*       multiply.
+/       divide.
+%       modulus.
++       sum.
+-       subtract (and unary -).
+<<      shift left.
+>>      shift right.
+&       bitwise AND.
+^       bitwise XOR.
+|       bitwise OR.
+</FONT></PRE>
+二进制必须有“ｂ”作结尾，例如<BR>
+
+<BR>
+<FONT FACE="Fixedsys"> 00011011b</FONT><BR>　<p>十六进制必须有&quot;<B>h</B>&quot;作结尾，另外，当地一位是字母时，最前面必须加上０，例如：</p>
+<p>
+<FONT FACE="Fixedsys"> 0ABCDh</FONT><BR>
+
+八进制必须有&quot;<B>o</B>&quot;作结尾，例如：<BR>
+
+<BR>
+<FONT FACE="Fixedsys"> 77o</FONT><BR><BR>
+
+
+<BR><BR><BR>
+
+</p>
+
+<HR>
+
+<CENTER>
+<A HREF="asm_tutorial_01.html"><B> >>> 下一节 >>> </B></A>
+</CENTER>
+
+<HR>
+
+</TD></TR>
+</TABLE>
+
+<BR>
+
+</FONT>
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,169 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>Using Emulator</TITLE>
+
+<META name="description" content="Using Emulator">
+
+<META name="keywords" content="using emulator, simulator, reference, description, hints">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+<FONT FACE="Verdana" SIZE=3>
+
+<FONT SIZE=+2>
+<B>Using Emulator</B>
+</FONT>
+
+<BR><BR>
+
+<BR>
+
+If you want to load your code into the emulator, just click "<B>Emulate</B>" button
+<IMG SRC="emulator01.gif" width="18" height="18">.
+<BR>
+But you can also use emulator to load executables even if you don't have
+the original source code. Select "<B>Show Emulator</B>" from "<B>Emulator</B>" menu.
+
+<BR><BR>
+
+<IMG SRC="emulator02.gif" WIDTH=678 HEIGHT=427>
+
+<BR><BR>
+Try loading files from "<B>MyBuild</B>" folder. If there are no files in "<B>MyBuild</B>" folder
+return to source editor, select <I>Samples</I> from <I>File</I> menu, load any sample, compile it and
+then load into the emulator:
+
+<BR><BR>
+
+<IMG SRC="emulator03.gif" WIDTH=646 HEIGHT=497>
+
+<BR><BR>
+[<B>Single Step</B>] button executes instructions one by one stopping after
+each instruction.
+
+<BR><BR>
+[<B>Run</B>] button executes instructions one by one with delay set by <B>step delay</B>
+between instructions.
+
+
+<BR><BR>
+Double click on register text-boxes opens "<B>Extended Viewer</B>" window
+with value of that register converted to all possible forms. You can modify the
+value of the register directly in this window.
+
+
+<BR><BR>
+Double click on memory list item opens "<B>Extended Viewer</B>" with WORD value loaded from
+memory list at selected location.
+Less significant byte is at lower address: LOW BYTE is loaded
+from selected position and HIGH BYTE from next memory address.
+You can modify the value of the memory word directly in the "<B>Extended Viewer</B>" window,
+
+
+<BR><BR>
+You can modify the values of registers on runtime by typing over the existing values.
+
+<BR><BR>
+[<B>Flags</B>] button allows you to view and modify flags on runtime.
+
+<BR><BR>
+<HR>
+<FONT SIZE=+2><B>Virtual Drives</B></FONT>
+<BR><BR>
+
+Emulator supports up to 4 virtual floppy drives. By default there is
+a <B>FLOPPY_0</B> file that is an image of a real floppy disk (the size of
+that file is exactly 1,474,560 bytes).
+
+<BR><BR>
+
+To add more floppy drives select <NOBR><B>[Create new floppy drive]</B></NOBR> from
+<NOBR><B>[Virtual Drive]</B></NOBR> menu. Each time you add a floppy drive emulator
+creates a <B>FLOPPY_1</B>, <B>FLOPPY_2</B>, and <B>FLOPPY_3</B> files.<BR>
+Created floppy disks are images of empty IBM/MS-DOS formatted disk images.
+Only <B>4</B> floppy drives are supported (0..3)!<BR>
+To <B>delete</B> a floppy drive you should close the emulator, delete the
+required file manually and restart the emulator.
+<BR><BR>
+You can determine the number of attached floppy drives using <B>INT 11h</B>
+this function returns <B>AX</B> register with BIOS equipment list. Bits 7 and 6
+define the number of floppy disk drives (minus 1):
+<PRE>
+Bits 7-6 of AX:
+          00 single floppy disk.
+          01 two floppy disks.
+          10 three floppy disks.
+          11 four floppy disks.
+</PRE>
+Emulator starts counting attached floppy drives from starting from the first,
+in case file <B>FLOPPY_1</B> does not exist it stops the check
+and ignores <B>FLOPPY_2</B> and <B>FLOPPY_3</B> files.
+<BR><BR>
+To write and read from floppy drive you can use <B>INT 13h</B> function,
+see <A HREF="supported_interrupts.html"><B>list of supported interrupts</B></A> for more information.
+<BR><BR>
+
+Ever wanted to write your own operating system?<BR><BR>
+
+<BLOCKQUOTE>
+     You can write a boot sector of
+     a virtual floppy via menu in  emulator:<BR>
+     <B>[Virtual Drive] -> [Write 512 bytes at 7C00 to Boot Sector]</B>
+     <BR>
+     First you should compile a "<B>.boot</B>" file and
+     load it in emulator (see "<B>micro-os_loader.asm</B>" and "<B>micro-os_kernel.asm</B>"
+     in "Samples" for more info).
+
+     <BR><BR>
+     Then select <B>[Virtual Drive] -> [Boot from Floppy]</B> menu to boot
+     emulator from a virtual floppy.
+
+     <BR><BR>
+     Then, if you are curious, you may write
+     the virtual floppy to real floppy and
+     boot your computer from it, I recommend
+     using "RawWrite for Windows" from:
+     <A HREF="http://uranus.it.swin.edu.au/~jn/linux/rawwrite.htm">
+     <B>http://uranus.it.swin.edu.au/~jn/linux/rawwrite.htm</B></A><BR>
+     (note that "<B>micro-os_loader.asm</B>"
+      is not using MS-DOS compatible boot sector, so it's better
+      to use and empty floppy, although it should be
+      IBM (MS-DOS) formatted).
+
+    <BR><BR>
+    Compiler directive
+	<B>ORG 7C00h</B> should be added before the code, when computer
+	starts it loads first track of a floppy disk at the address 0000:7C00.
+	<BR>
+	The size of a <B>.BOOT</B> file should be less then 512 bytes
+	(limited by the size of a disk sector).
+
+</BLOCKQUOTE>
+<BR>
+
+<HR>
+
+<BR>
+
+</FONT>
+
+</TD></TR>
+</TABLE>
+
+<BR>
+
+
+
+</BODY>
+
+</HTML>

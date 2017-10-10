@@ -1,0 +1,367 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>I/O ports</TITLE>
+
+<META name="description" content="Simulation of I/O ports of IBM PC">
+
+<META name="keywords" content="i/o ports, direct io, port">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+<FONT FACE="Verdana" SIZE=3>
+
+<FONT SIZE=+2>
+<B>I/O ports</B>
+</FONT>
+
+<BR><BR>
+
+<BR>
+
+Emulator does not reproduce any original I/O ports of IBM PC, instead
+it has virtual devices that can be accessed by IN/OUT instructions.
+<BR><BR>
+
+
+<HR>
+
+<BR>
+<B>Custom I/O Devices</B>
+<BR><BR>
+
+"<I>Emu8086</I>" supports additional devices
+that can be created by 3rd party vendors. Device can be written in any
+language, such as: Visual Basic,
+VC++, Delphi. For more information and sample source code look inside <B>DEVICES</B> folder.
+
+<BR><BR>
+
+Reserved input / output addresses for custom
+devices are: from 00000Fh to 0FFFFh (15 to 65535).
+Port 100 corresponds to byte 100 in "<B>EmuPort.io</B>"
+file, port 101 to the byte 101, etc...<BR>
+(we count from zero).
+<BR>
+"<B>EmuPort.io</B>" file is located in Windows "<B>Temp</B>" directory
+ (can be accessed by <I>GetTempPath()</I>
+function of the API).
+<BR><BR>
+
+I'll be glad to include devices made by you
+in the next release of "<I>Emu8086</I>". If you decide
+to share your device with other developers
+around the world - please <A HREF="mailto:info@emu8086.com">send us</A> the source
+code of the device!
+
+<BR><BR>
+
+<HR>
+
+<BR><BR>
+Devices
+are available from "<B>Virtual Devices</B>" menu of the emulator.
+
+<BR><BR>
+
+<UL>
+
+<LI><B>Traffic Lights</B> - Port 4 (word)<BR><BR>
+The traffic lights are controlled by sending data to I/O Port 4.<BR>
+There are 12 lamps: 4 green, 4 yellow, and 4 red.<BR><BR>
+
+You can set the state of each lamp by setting its bit:<BR><BR>
+<B>1</B> - the lamp is turned on.<BR>
+<B>0</B> - the lamp is turned off.<BR><BR>
+
+Only 12 low bits of a word are used (0 to 11), last bits (12 to 15) are unused.<BR><BR>
+
+For example:<BR><BR>
+<FONT FACE="Fixedsys">
+MOV AX, 0000001011110100b<BR>
+OUT 4, AX<BR><BR>
+</FONT>
+
+<IMG SRC="traffic.gif" WIDTH=233 HEIGHT=276>
+
+<BR><BR>
+We use yellow hexadecimal digits in caption (to achieve compact view), here's a conversion:<BR>
+<PRE><FONT FACE="Fixedsys">Hex - Decimal
+
+A   -   10
+B   -   11
+C   -   12    (unused)
+D   -   13    (unused)
+E   -   14    (unused)
+F   -   15    (unused)</FONT></PRE><BR>
+
+
+First operand for <B>OUT</B> instruction is a port number (<B>4</B>), second operand
+is a word (<B>AX</B>) that is written to the port. First operand must be an immediate byte
+value (0..255) or <B>DX</B> register. Second operand must be <B>AX</B> or <B>AL</B> only.
+
+<BR><BR>
+
+See also "<B>traffic_lights.asm</B>" in Samples.
+
+<BR><BR>
+
+<HR>
+
+<BR>
+If required you can read the data from port using <B>IN</B> instruction, for example:<BR>
+<BR>
+<FONT FACE="Fixedsys">
+IN AX, 4<BR><BR>
+</FONT>
+
+First operand of <B>IN</B> instruction (<B>AX</B>) receives the value from port,
+second operand (<B>4</B>) is a port number. First operand must be <B>AX</B> or <B>AL</B> only.
+Second operand must be an immediate byte value (0..255) or <B>DX</B> register.
+<BR><BR>
+<HR>
+<BR><BR>
+</LI>
+
+
+<LI><B>Stepper Motor</B> - Port 7 (byte)<BR><BR>
+The Stepper Motor is controlled by sending data to I/O Port 7.<BR><BR>
+Stepper Motor is electric motor that can be precisely controlled by
+signals from a computer.<BR><BR>
+The motor turns through a precise angle each time it receives a signal.<BR><BR>
+By varying the rate at which signal pulses are produced,
+the motor can be run at different speeds or turned through
+an exact angle and then stopped.<BR><BR>
+
+This is a basic 3-phase stepper motor, it has 3 magnets controlled by bits <B>0, 1 and 2</B>.
+Other bits (3..7) are unused.
+<BR><BR>
+
+When magnet is working it becomes red. The arrow in the left upper corner shows
+the direction of the last motor move. Green line is here just to see that it is
+really rotating.
+
+<BR><BR>
+
+<IMG SRC="stepper.gif" WIDTH=237 HEIGHT=215>
+
+<BR><BR>
+
+For example, the code below will do three clock-wise half-steps:<BR><BR>
+<FONT FACE="Fixedsys">
+MOV AL, 001b   ; initialize.<BR>
+OUT 7, AL<BR><BR>
+
+MOV AL, 011b   ; half step 1.<BR>
+OUT 7, AL<BR><BR>
+
+MOV AL, 010b   ; half step 2.<BR>
+OUT 7, AL<BR><BR>
+
+MOV AL, 110b   ; half step 3.<BR>
+OUT 7, AL<BR><BR>
+</FONT>
+
+If you ever played with magnets you will understand how it works.
+Try experimenting, or see "<B>stepper_motor.asm</B>" in Samples.
+
+<BR><BR>
+If required you can read the data from port using <B>IN</B> instruction, for example:<BR>
+<BR>
+<FONT FACE="Fixedsys">
+IN AL, 7<BR><BR>
+</FONT>
+
+<HR>
+
+<BR><BR>
+
+</LI>
+
+
+<LI><B>Robot</B> - Port 9 (3 bytes)<BR><BR>
+
+
+<IMG SRC="robot.gif" WIDTH=530 HEIGHT=352>
+
+<BR><BR>
+The Robot is controlled by sending data to I/O Port 9.<BR>
+<BR><BR>
+
+First byte (Port 9) is a <B>Command Register</B>. Set values to
+this port to make robot do something. Supported values:<BR><BR>
+<TABLE BORDER=1 CELLPADDING=7>
+<TR>
+<TD BGCOLOR=YELLOW>Decimal Value</TD><TD BGCOLOR=YELLOW>Binary Value</TD><TD BGCOLOR=YELLOW>Action</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>0</B> </TD> <TD>00000000</TD> <TD> Do nothing.</TD>
+</TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>1</B> </TD> <TD>00000001</TD> <TD> Move Forward.</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>2</B> </TD> <TD>00000010</TD> <TD> Turn Left.</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>3</B> </TD> <TD>00000011</TD> <TD> Turn Right.</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>4</B> </TD> <TD>00000100</TD> <TD>Examine.
+           Examines an object in front using sensor. When robot completes the task,
+           result is set to <B>Data Register</B> and <B>Bit #0</B> of <B>Status Register</B>
+           is set to <B>1</B>.</TD>
+</TR>
+
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>5</B> </TD> <TD>00000101</TD> <TD> Switch On a Lamp.</TD>
+</TR>
+
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>6</B> </TD> <TD>00000110</TD> <TD> Switch Off a Lamp.</TD>
+</TR>
+
+</TABLE>
+
+<BR><BR>
+
+Second byte (Port 10) is a <B>Data Register</B>. This register
+is set after robot completes the <B>Examine</B> command:<BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=7>
+<TR>
+<TD BGCOLOR=YELLOW>Decimal Value</TD><TD BGCOLOR=YELLOW>Binary Value</TD><TD BGCOLOR=YELLOW>Meaning</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>255</B></TD>  <TD>11111111</TD> <TD>Wall</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>0</B></TD>  <TD>00000000</TD> <TD>Nothing</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>7</B></TD>  <TD>00000111</TD> <TD>Switched-On Lamp</TD>
+</TR>
+<TR>
+<TD ALIGN=CENTER VALIGN=CENTER><B>8</B></TD>  <TD>00001000</TD> <TD>Switched-Off Lamp</TD>
+</TR>
+</TABLE>
+
+<BR><BR>
+
+Third byte (Port 11) is a <B>Status Register</B>. Read values from
+this port to determine the state of the robot. Each bit has
+a specific property:<BR><BR>
+<TABLE BORDER=1 CELLPADDING=7>
+<TR>
+<TD BGCOLOR=YELLOW><NOBR>Bit Number</NOBR></TD><TD BGCOLOR=YELLOW>Description</TD>
+</TR>
+<TR>
+<TD><B>Bit #0 </B> </TD><TD>  <B>zero</B> when there is no new data in <B>Data Register</B>,
+             <B>one</B> when there is new data in <B>Data Register</B>.</TD>
+</TR>
+<TR>
+<TD><B>Bit #1 </B> </TD><TD>  <B>zero</B> when robot is ready for next command,
+      <B>one</B> when robot is busy doing some task.</TD>
+</TR>
+<TR>
+<TD><B>Bit #2 </B> </TD><TD>  <B>zero</B> when there is no error on last command execution,
+           <B>one</B> when there is an error on command execution (when robot cannot
+           complete the task: move, turn, examine, switch on/off lamp).</TD>
+</TR>
+</TABLE>
+
+<BR><BR>
+
+Example:<BR>
+<PRE><FONT FACE="Fixedsys">
+MOV AL, 1  ; move forward.
+OUT 9, AL  ;
+
+MOV AL, 3  ; turn right.
+OUT 9, AL  ;
+
+MOV AL, 1  ; move forward.
+OUT 9, AL  ;
+
+MOV AL, 2  ; turn left.
+OUT 9, AL  ;
+
+MOV AL, 1  ; move forward.
+OUT 9, AL  ;
+</FONT></PRE>
+
+<BR>
+
+Keep in mind that robot is a
+mechanical creature and it takes
+some time for it to complete
+a task. You should always check bit#1 of <B>Status Register</B>
+before sending data to Port 9, otherwise
+the robot will reject your command and "<FONT COLOR=red><B>BUSY!</B></FONT>" will be
+shown. See "<B>robot.asm</B>" in Samples.
+
+
+<BR><BR>
+
+<HR>
+
+<BR>
+
+<B>Creating Custom <I>Robot World</I> Map</B>
+
+<BR><BR>
+
+You can create any map for the robot using the tool box.<BR><BR>
+If you choose <B>robot</B> and place it over existing <B>robot</B> it
+will turn 90 degrees counter-clock-wise. To manually move the <B>robot</B>
+just place it anywhere else on the map.<BR><BR>
+
+If you choose <B>lamp</B> and place it over <B>switched-on lamp</B>
+the <B>lamp</B> will become <B>switched-off</B>, if <B>lamp</B> is
+already <B>switched-off</B> it will be <B>deleted</B>. <BR><BR>
+
+Placing <B>wall</B> over existing <B>wall</B> will <B>delete</B> it.
+<BR><BR>
+
+Current version is limited to a single robot only. If you forget to place
+a robot on the map it will be placed in some random coordinates.
+
+<BR><BR>
+The map is automatically saved on exit.
+
+<BR><BR>
+Right-click the map to get a popup menu that
+allows to <NOBR>Switch-Off/On</NOBR> all Lamps.
+<BR><BR>
+
+<HR>
+
+</LI>
+
+
+</UL>
+
+
+
+</FONT>
+
+</TD></TR>
+</TABLE>
+
+
+
+<BR>
+
+
+
+</BODY>
+
+</HTML>

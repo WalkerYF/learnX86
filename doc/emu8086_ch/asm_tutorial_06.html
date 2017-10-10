@@ -1,0 +1,337 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 6)</TITLE>
+
+<META name="description" content="Arithmetic and Logic Instructions">
+
+<META name="keywords" content="arithmetic, logic, instructions, 8086, tutorial, programming, assembler tutorial, tutorial for begginers">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<FONT SIZE=+1>
+<B>8086 Assembler Tutorial for Beginners (Part 6)</B>
+</FONT>
+
+
+
+
+<BR><BR>
+
+<FONT SIZE=+2><B>运算与逻辑指令</B></FONT><BR>　</FONT><p><font face="Verdana">
+大多数运算与逻辑指令影响处理器的状态标记寄存器<span lang="zh-cn">。</span><br>
+<br>
+</font>
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<IMG SRC="flags.gif" width="212" height="179">
+
+<BR>　</FONT></p>
+<p><font face="Verdana">从上图可以看到，这是状态标记寄存器是一个16位寄存器<br>
+<br>
+每一位称作一个标志位，可以取值<span lang="zh-cn"> </span><b>1</b><span lang="zh-cn"> </span>或者<span lang="zh-cn">
+</span><b>0</b><span lang="zh-cn"> </span>。</font><FONT FACE="Verdana" SIZE=3><BR>
+　</p>
+
+<UL>
+
+<LI><B>进位标志<span lang="zh-cn"> </span>Carry Flag (CF)</B> - 出现无符号<span lang="zh-cn">（</span>unsigned overflow<span lang="zh-cn">）</span>溢出该位设置成<b>1</b>。例如，计算<span lang="zh-cn">
+</span><b>255+1</b>（结果超出0...255）。没有溢出时该位为<b>0</b>。<BR><BR>
+</LI>
+
+<LI><b>零标志<span lang="zh-cn"> </span>Zero Flag (ZF)</b> - 当结果为<span lang="zh-cn">
+</span><b>0</b><span lang="zh-cn"> </span>时设置为<b>1</b>，<span lang="zh-cn">结果不为 
+<b>0</b> 时设置</span>为<b>0</b>。<BR><BR>
+</LI>
+
+<LI><b>符号标志<span lang="zh-cn"> </span>Sign Flag (SF)</b> -&nbsp; 结果为<b>负</b>置1，结果为<span lang="zh-cn"><b>正</b></span>置为0。事实上该位对于结果特别重要。<BR><BR>
+</LI>
+
+<LI><b>溢出标志<span lang="zh-cn"> </span>Overflow Flag (OF)</b> -&nbsp; 
+当出现有符号数溢出设置为1。例如，计算<b>100+50</b>（结果超出－128－127的范围）。<BR><BR>
+</LI>
+
+<LI><b>奇偶标志<span lang="zh-cn"> </span>Parity Flag (PF)</b> - 当结果操作数中1的个数为偶时置<b>1</b>，否则为<b>0</b>注意，如果结果是一个字，该标志只指示低8位。<BR><BR>
+</LI>
+
+<LI><b>辅助进位标志<span lang="zh-cn"> </span>Auxiliary Flag (AF)</b> -&nbsp; 
+低4位向上进位时置<b>1</b>，否则为<b>0</b>（记录运算时第3位（半个字节）产生的进位值。例如，执行加法指令时，最高有效位有进位时置1，否则置0<br>
+　</LI>
+
+<LI><B>中断标志<span lang="zh-cn"> </span>Interrupt enable Flag (IF)</B> - 当cpu容许中断时为<b>1</b>，否则为<b>0
+</b>
+
+<BR><BR>
+</LI>
+
+<LI><B>Direction Flag (DF)</B> - 方向标志，在串处理指令中控制处理信息的方向用。当<B>DF</B>为1时，每次操作后使变址寄存器SI和DI减量，这样就使串处理从高地址向低地址方向处理。当<B>DF</B>为0时，则使SI和DI增量，使串处理从低地址向高地址方向处理。<BR><BR>
+</LI>
+
+</UL>
+
+<HR>
+
+<BR>
+
+这里有3组指令.<BR><BR>
+
+<HR>
+<BR>
+
+第一组： <B>ADD</B>, <B>SUB</B>,<B>CMP</B>, <B>AND</B>, <B>TEST</B>,
+                        <B>OR</B>, <B>XOR</B><BR><BR>
+
+
+支持如下操作数:<BR><BR>
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+	REG, memory<BR>
+	memory, REG<BR>
+	REG, REG<BR>
+	memory, immediate<BR>
+	REG, immediate
+</FONT>
+</BLOCKQUOTE>
+
+<B>REG<span lang="zh-cn">（寄存器）</span></B>:<FONT SIZE=-1> AX, BX, CX, DX, AH, AL, BL, BH, CH, CL, DH, DL, DI, SI, BP, SP.</FONT><BR><BR>
+<B>memory<span lang="zh-cn">（内存）</span></B>: [BX], [BX+SI+7], <span lang="zh-cn">
+变量</span>,<span lang="zh-cn">等等</span>...<BR><BR>
+<B>immediate<span lang="zh-cn">（立即数）</span></B>: 5, -24, 3Fh, 10001101b, 
+<span lang="zh-cn">等等</span>...<BR><BR>
+
+<br>
+执行之后，结果经常存放在第一个操作数中。<B>CMP</B>和<B>TEST</B>指令只影响标志位，并不返回数值（这两条指令是用来在程序运行中判断的）上述指令<span lang="zh-cn">只</span>影响如下标志位<span lang="zh-cn">：</span><BR>
+
+<BR>
+&nbsp; &nbsp; &nbsp; &nbsp;<B>CF</B>, <B>ZF</B>,
+<B>SF</B>, <B>OF</B>, <B>PF</B>, <B>AF</B>.<BR><BR>
+
+<UL>
+
+<LI><B>ADD</B> - 将第二个操作数加<span lang="zh-cn">至</span>第一个操作数上
+<BR><BR></LI>
+
+<LI><B>SUB</B> - 从第一个操作数中减去第二个操作数<BR><BR></LI>
+
+<LI><B>CMP</B> - 从第一个操作数中减去第二个操作数，但<b>只影响标志位</b>.
+<BR><BR></LI>
+
+<LI><B>AND</B> - 两个操作数各个位逻辑与运算。<span lang="zh-cn">运算法则如下</span><BR>
+                 <BLOCKQUOTE>
+                 <FONT FACE="Fixedsys">
+                 1 AND 1 = 1<BR>
+                 1 AND 0 = 0<BR>
+                 0 AND 1 = 0<BR>
+                 0 AND 0 = 0<BR>
+                 </FONT>
+                 </BLOCKQUOTE>
+				 <span lang="zh-cn">只有当两个操作数都是<b>1</b>时，运算结果才是<b>1</b>。</span><BR><BR></LI>
+
+<LI><B>TEST</B> - 和上面的and 操作一样，但是<b>只影响标志位</b>。<BR><BR></LI>
+
+<LI><B>OR</B> - 两个操作数各个位逻辑或运算。<span lang="zh-cn">运算法则如下</span><BR>
+                 <BLOCKQUOTE>
+                 <FONT FACE="Fixedsys">
+                 1 OR 1 = 1<BR>
+                 1 OR 0 = 1<BR>
+                 0 OR 1 = 1<BR>
+                 0 OR 0 = 0<BR>
+                 </FONT>
+                 </BLOCKQUOTE>
+				 <span lang="zh-cn">如果操作数中有<b>1</b>那么结果一定是<b>1</b>。</span><p>　</LI>
+
+<LI><B>XOR</B> -&nbsp; 两个操作数各个位逻辑异或运算。<span lang="zh-cn">运算法则如下</span><BR>
+                 <BLOCKQUOTE>
+                 <FONT FACE="Fixedsys">
+                 1 XOR 1 = 0<BR>
+                 1 XOR 0 = 1<BR>
+                 0 XOR 1 = 1<BR>
+                 0 XOR 0 = 0<BR>
+                 </FONT>
+                 </BLOCKQUOTE>
+				 <span lang="zh-cn">当两个操作数不同时，结果为<b>1</b>。</span><BR></LI>
+
+</UL>
+
+<HR>
+<BR>
+
+第二组: <B>MUL</B>, <B>IMUL</B>, <B>DIV</B>, <B>IDIV</B><BR><BR>
+
+支持如下操作数:<BR><BR>
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+	REG<BR>
+	memory<BR>
+</FONT>
+</BLOCKQUOTE>
+
+<B>REG<span lang="zh-cn">（寄存器）</span></B>:<FONT SIZE=-1> AX, BX, CX, DX, AH, AL, BL, BH, CH, CL, DH, DL, DI, SI, BP, SP.</FONT><BR><BR>
+<B>memory<span lang="zh-cn">（内存）</span></B>: [BX], [BX+SI+7], variable, etc...<BR><BR>
+
+<B>MUL</B> and <B>IMUL</B> 指令只影响 <B>CF</B>, <B>OF</B>标志位<span lang="zh-cn">。</span><BR>
+&nbsp; &nbsp; &nbsp; &nbsp;<BR>
+运算后如果结果超出范围，这些标记位置<b>1</b>，如果没有超过<br>
+<br>
+范围，置<b>0</b><BR><BR>
+
+<B>DIV</B> <span lang="zh-cn">和</span> <B>IDIV</B> 指令对于标志位无影响<BR><BR>
+
+<UL>
+
+<LI><B>MUL</B> - 无符号乘:
+				 <BLOCKQUOTE>
+				 	 当操作数是<b>字节</b>时:<BR>
+					 <FONT FACE="Fixedsys">AX = AL * 操作数</FONT>.
+				 </BLOCKQUOTE>
+
+				 <BLOCKQUOTE>
+				    当操作数是<b>字</b>时:<BR>
+					<FONT FACE="Fixedsys">(DX AX) = AX * 操作数</FONT>.
+				 </BLOCKQUOTE>
+</LI>
+
+<LI><B>IMUL</B> - 有符号乘法:
+				 <BLOCKQUOTE>
+				 	 当操作数是<b>字节</b>时:<BR>
+					 <FONT FACE="Fixedsys">AX = AL * </FONT>操作数.
+				 </BLOCKQUOTE>
+
+				 <BLOCKQUOTE>
+				    当操作数是<b>字</b>时:<BR>
+					<FONT FACE="Fixedsys">(DX AX) = AX *&nbsp; </FONT>操作数.
+				 </BLOCKQUOTE>
+</LI>
+
+<LI><B>DIV</B> - 无符号除法:
+				 <BLOCKQUOTE>
+				 	 当操作数是<b>字节</b>时:<BR>
+					 <FONT FACE="Fixedsys">AL = AX /
+					 </FONT>操作数<FONT FACE="Fixedsys"><BR>
+					 AH = 余数（取模后的余数）
+					 </FONT>.
+				 </BLOCKQUOTE>
+
+				 <BLOCKQUOTE>
+				    当操作数是<b>字</b>时:<BR>
+					<FONT FACE="Fixedsys">AX = (DX AX) /
+					</FONT>操作数<FONT FACE="Fixedsys"><BR>
+					DX =
+					</FONT>
+
+</FONT>
+
+
+<FONT FACE="Fixedsys" SIZE=3>
+
+
+                    余数（取模后的余数）</BLOCKQUOTE>
+</LI>
+
+</FONT>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+<LI><B>IDIV</B> - <span lang="zh-cn">有</span>符号除法:
+				 <BLOCKQUOTE>
+				 	 当操作数是<b>字节</b>时:<BR>
+					 <FONT FACE="Fixedsys">AL = AX /
+					 </FONT>操作数<FONT FACE="Fixedsys"><BR>
+					 AH =</FONT></FONT><FONT FACE="Fixedsys" SIZE=3>余数（取模后的余数）</BLOCKQUOTE>
+
+</FONT>
+
+
+<FONT FACE="Verdana" SIZE=3>
+
+
+				 <BLOCKQUOTE>
+				    当操作数是<b>字</b>时:<BR>
+					<FONT FACE="Fixedsys">AX = (DX AX) /
+					</FONT>操作数<FONT FACE="Fixedsys"><BR>
+					DX = 余数（取模后的余数）
+					</FONT>.
+				 </BLOCKQUOTE>
+</LI>
+</UL>
+
+<HR>
+<BR>
+
+第三组: <B>INC</B>, <B>DEC</B>, <B>NOT</B>, <B>NEG</B><BR><BR>
+
+支持如下操作数:<BR><BR>
+<BLOCKQUOTE>
+<FONT FACE="Fixedsys">
+	REG<BR>
+	memory<BR>
+</FONT>
+</BLOCKQUOTE>
+
+<B>REG<span lang="zh-cn">（寄存器）</span></B>:<FONT SIZE=-1> AX, BX, CX, DX, AH, AL, BL, BH, CH, CL, DH, DL, DI, SI, BP, SP.</FONT><BR><BR>
+<B>memory<span lang="zh-cn">（内存）</span></B>: [BX], [BX+SI+7], variable, etc...<BR><BR>
+
+<B>INC</B>, <B>DEC</B> 指令只影响如下标志位:<BR>
+&nbsp; &nbsp; &nbsp; &nbsp;<B>ZF</B>, <B>SF</B>, <B>OF</B>, <B>PF</B>, <B>AF</B>.<BR><BR>
+
+<B>NOT</B> 指令不影响任何标志位<span lang="zh-cn">！</span><BR><BR>
+
+<B>NEG</B> i指令只影响如下操作位<span lang="zh-cn">：</span><BR>
+&nbsp; &nbsp; &nbsp; &nbsp;<B>CF</B>, <B>ZF</B>, <B>SF</B>, <B>OF</B>, <B>PF</B>, <B>AF</B>.<BR><BR>
+
+
+<UL>
+
+<LI><B>NOT</B> - 对与操作数每一位取反<BR><BR>
+</LI>
+
+<LI><B>NEG</B> - 对操作数取反<br>
+<br>
+实际上它对每一位取反然后在最后一位加1。例如5会变成－5，－2会变成2。（这里所说运算应当是计算机内部的补码运算）</LI>
+
+</UL>
+
+
+
+<HR>
+
+
+
+<BR><BR><BR>
+
+<HR>
+<CENTER>
+<A HREF="asm_tutorial_05.html"><B> &lt;&lt;&lt; <span lang="zh-cn">&nbsp;前一部分 
+</span>&nbsp;&lt;&lt;&lt; </B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="asm_tutorial_07.html"><B> >>> <span lang="zh-cn">后一部分</span> >>> </B></A>
+</CENTER>
+<HR>
+
+<BR>
+
+</FONT>
+
+
+</TD></TR>
+</TABLE>
+
+</BODY>
+
+</HTML>

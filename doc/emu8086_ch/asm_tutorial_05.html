@@ -1,0 +1,254 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML 3.0//EN">
+<HTML>
+
+<HEAD>
+
+<TITLE>8086 Assembler Tutorial for Beginners (Part 5)</TITLE>
+
+<META name="description" content="Library of common functions - emu8086.inc">
+
+<META name="keywords" content="common functions, emu8086.inc, 8086, tutorial, programming, assembler tutorial, tutorial for begginers">
+
+<META name="robots" content="nofollow">
+
+</HEAD>
+
+<BODY bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#007099" alink="#FF0000">
+
+<FONT FACE="Verdana" SIZE=3>
+
+<TABLE WIDTH=80%>
+<TR><TD>
+
+<FONT SIZE=+1>
+<B>8086 Assembler Tutorial for Beginners (Part 5)</B>
+</FONT>
+
+
+
+<BR><BR>
+
+<FONT SIZE=+2><B>常用函数库 - emu8086.inc</B></FONT>
+<BR><BR>
+
+通过引用一些常用函数，可以使你编程更加方便。<br>
+<br>
+在你的程序中使用其他文件中的函数的方法是<br>
+<br>
+
+<FONT FACE="Verdana" SIZE=3>
+
+<B>INCLUDE</B></FONT>后面接上你要引用的文件名。编译器<br>
+<br>
+会自动在你源程序所在的文件夹中查找你引用<br>
+<br>
+的文件，如果没有找到，它将搜索<FONT FACE="Verdana" SIZE=3><B>Inc</B>
+
+</FONT>
+
+文件夹。<br>
+<br>
+通常你无法完全理解<b> emu8086.inc</b>（位于<b><span lang="en-us">I</span>nc</b>文件夹）<br>
+<br>
+但是这没有关系，你只用知道它能做什么就足够了。<br>
+<br>
+要使用<b>emu8086.inc</b>中的函数，你应当在你程序的开<br>
+<br>
+头加上<BR><BR>
+
+<FONT FACE="Fixedsys">
+include 'emu8086.inc'
+</FONT>
+
+
+<BR><BR>
+
+<HR>
+
+<BR>
+<B>emu8086.inc</B> 定义了如下的宏:<BR><BR>
+<UL>
+
+<LI><B>PUTC char</B> - 将一个ascii字符输出到光标当前位值，只有一个<br>
+<span lang="en-us">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>参数的宏<BR><BR></LI>
+
+<LI><B>GOTOXY col, row</B> -<span lang="en-us"> </span>设置当前光标位置，有两个参数<BR><BR></LI>
+
+<LI><B>PRINT string</B> - 输出字符串，一个参数<BR><BR></LI>
+
+
+<LI><B>PRINTN string</B> - 输出字符串，一个参数。与print功能相同，<br>
+<span lang="en-us">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>不同在于输出之后自动回车<br>
+<BR></LI>
+
+<LI><B>CURSOROFF</B> - 关闭文本光标<BR><BR></LI>
+
+<LI><B>CURSORON</B> - 打开文本光标<BR><BR></LI>
+
+
+</UL>
+
+使用上述宏的方法是：在你需要的位值写上宏名称加上参数。例如<span lang="en-us">:</span><BR><BR>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><FONT FACE="Fixedsys">
+include emu8086.inc
+
+ORG 100h
+
+PRINT 'Hello World!'
+
+GOTOXY 10, 5
+
+PUTC 65 ; 65 - ASCII 码的 'A'
+PUTC 'B'
+
+RET ; 返回操作系统
+END ; 停止编译器</FONT></PRE>
+</TD></TR></TABLE>
+
+<BR>当编译器运行你的代码时，它首先找到声明中的<br>
+<br>
+<b>emu8086.inc</b>文件，然后将代码中的宏用实际的<br>
+<br>
+代码替换掉。通常来说，宏都是比较小的代码段，<br>
+<br>
+经常使用宏会使得你的可执行程序特别大<br>
+<br>
+（对于降低文件大小来说使用过程更好）<BR>
+
+<BR>
+
+<HR>
+
+<BR>
+
+<b>emu8086.inc</b><span lang="en-us"> </span>同样定义了如下过程<span lang="en-us">:</span><BR><BR>
+<UL>
+
+<LI><B>PRINT_STRING</B> - 在当前光标位置输出一个字符串字符串地址由<FONT FACE="Verdana" SIZE=3><B>DS:SI</B></FONT>
+
+寄存器给出使用时，需要在<b><span lang="en-us">END</span></b>前面声明<b>DEFINE_PRINT_STRING</b> 
+才能使用<span lang="en-us">.</span><BR><BR></LI>
+
+<LI><B>PTHIS</B> - 在当前光标位置输出一个字符串（同 PRINT_STRING）<br>
+<br>
+一样，不同之处在于它是从堆栈接收字符串。字符串终止符<br>
+<br>
+应在call之后定义。例如<br>
+<br>
+<span lang="en-us">&nbsp;&nbsp; </span>CALL PTHIS<br>
+<span lang="en-us">&nbsp;&nbsp; </span>db 'Hello World!', 0 <br>
+<br>
+使用时，需要在<b><span lang="en-us"> END</span></b> 前面声明 <b>DEFINE_PTHIS</b> 。<BR></LI>
+
+<LI><B>GET_STRING</B> - 从用户输入得到一个字符串，输入的字符串写入
+
+<FONT FACE="Verdana" SIZE=3>
+
+<B>DS:DI</B></FONT>
+
+指出的缓冲，缓冲区的大小由<FONT FACE="Verdana" SIZE=3>
+
+<B>DX</B></FONT>设置。回车作为输入结束。使用时，需要在<FONT FACE="Verdana" SIZE=3><B>END</B></FONT>前面声明<FONT FACE="Verdana" SIZE=3><B><span lang="en-us">&nbsp;&nbsp;&nbsp;
+</span>DEFINE_GET_STRING</B></FONT>
+
+。<br>
+<BR></LI>
+
+<LI><B>CLEAR_SCREEN</B> - 清屏过程(滚过整个屏幕),然后将光标设置在左上角. 使用时，需要在<FONT FACE="Verdana" SIZE=3><B>END</B></FONT>前面声明<FONT FACE="Verdana" SIZE=3><B>DEFINE_CLEAR_SCREEN</B></FONT>&nbsp; 
+。<br>
+　</LI>
+
+<LI><B>SCAN_NUM</B> - 取得用户从键盘输入的多位有符号数，并将输入存放<br>
+在<FONT FACE="Verdana" SIZE=3><B>CX</B></FONT>寄存器。 使用时，需要在
+
+<FONT FACE="Verdana" SIZE=3>
+
+<B>END</B></FONT>前面声明
+
+<FONT FACE="Verdana" SIZE=3>
+
+<B><span lang="en-us">&nbsp;&nbsp;&nbsp;&nbsp; </span>DEFINE_SCAN_NUM</B></FONT>。<BR><BR></LI>
+
+<LI><B>PRINT_NUM</B> - 输出<FONT FACE="Verdana" SIZE=3><B>AX</B></FONT>寄存器中的有符号数<br>
+使用时，需要在<FONT FACE="Verdana" SIZE=3><B>END</B></FONT>
+
+前面声明
+
+<FONT FACE="Verdana" SIZE=3>
+
+<B>DEFINE_PRINT_NUM</B></FONT>以及
+
+<FONT FACE="Verdana" SIZE=3>
+
+<B>DEFINE_PRINT_NUM_UNS<span lang="en-us">.</span></B></FONT><BR><BR></LI>
+
+<LI><B>PRINT_NUM_UNS</B> - 输出<FONT FACE="Verdana" SIZE=3><B>AX</B></FONT>寄存器中的无符号数。使用时，需要在<FONT FACE="Verdana" SIZE=3><B>END</B></FONT>
+
+前面声明<FONT FACE="Verdana" SIZE=3><B>DEFINE_PRINT_NUM_UNS<span lang="en-us">.</span></B></FONT><BR><BR></LI>
+
+</UL>
+
+使用上述过程，必须在你源程序的底部（但是在<FONT FACE="Verdana" SIZE=3><B>END</B></FONT>之前！！！）声明这些函数，使用<FONT FACE="Verdana" SIZE=3><B>CALL</B></FONT>指令后面接上过程名称来调用。例如：<BR>
+<BR>
+
+<TABLE BORDER=1 CELLPADDING=10 WIDTH=50%><TR><TD>
+<PRE><font face="Fixedsys">include 'emu8086.inc'
+
+ORG 100h
+
+LEA SI, msg1 ; 要求输入数字
+CALL print_string ;
+CALL scan_num ; 读取数字放入cx
+
+MOV AX, CX ; CX存放数值拷贝到AX
+
+; 输入如下字符
+CALL pthis
+DB 13, 10, 'You have entered: ', 0
+
+CALL print_num ; 输出 AX中的字符
+
+RET ; 返回操作系统
+
+msg1 DB 'Enter the number: ', 0
+
+DEFINE_SCAN_NUM
+DEFINE_PRINT_STRING
+DEFINE_PRINT_NUM
+DEFINE_PRINT_NUM_UNS ; print_num函数要求的
+DEFINE_PTHIS
+
+END ; 结束
+</font></PRE>
+</TD></TR></TABLE>
+
+<BR><br>
+首先，编译器运行声明（对于宏只是展开）。当编译器遇到<FONT FACE="Verdana" SIZE=3><B>CALL</B></FONT>指令，它<p>
+将用过程声明中的地址来替代过程名。程序在执行过程中遇到这个过程，便</p>
+<p>会直接跳转到过程。这是非常有用的，比如，即使在你的代码中执行100次</p>
+<p>一个过程，编译后的可执行文件也不会因此而增大多少。这样看起来很</p>
+<p>划算，是不是？后面你会学到更多的，现在只需要了解一点点基本原理。<BR>
+　</p>
+
+<HR>
+<CENTER>
+<A HREF="asm_tutorial_04.html"><B> &lt;&lt;&lt; 前一部分 &lt;&lt;&lt; </B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="asm_tutorial_06.html"><B> >>> 后一部分 >>> </B></A>
+</CENTER>
+<HR>
+
+</TD></TR>
+</TABLE>
+
+<BR>
+
+</FONT>
+
+</BODY>
+
+</HTML>
