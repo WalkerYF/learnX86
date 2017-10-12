@@ -3,7 +3,8 @@
 	var1: .word 66
 	var2: .word 65
 .text
-__start:
+.globl main
+main:
 	lw $t1, var1   # var = 66
 	lw $t2, var2   # var = 65
 	beq $t1, $t2, ELSE # 如果两个数相等就跳转
