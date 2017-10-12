@@ -1,9 +1,9 @@
-# å¤åˆ¶å­—ç¬¦ä¸²
+# ¸´ÖÆ×Ö·û´®
 
 .data
 	var: .byte '1','2','3','a','b'
 	#var2: .byte '1','2','3','b','a'
-	result : .space 100 # ä»¥å­—èŠ‚å½¢å¼å­˜å‚¨å­—ç¬¦ä¸²
+	result : .space 100 # ÒÔ×Ö½ÚĞÎÊ½´æ´¢×Ö·û´®
 .text
 __start:
 	la $a0 , var
@@ -14,7 +14,7 @@ __start:
 strcpy:
 	addi $sp, $sp, -4
 	sw $s0, 0($sp)
-	add $s0, $zero, $zero # å°†s0æ¸…é›¶  i
+	add $s0, $zero, $zero # ½«s0ÇåÁã  i
 L1:	add $t1, $s0, $a1  # $t1 y[i]
 	lbu $t2, 0($t1)
 	add $t3, $s0, $a0

@@ -1,27 +1,27 @@
-# å®žçŽ°æ•°ç»„æ±‚å’Œçš„å‡½æ•°
-# å…ˆç»™å‡ºä¸€ä¸ªä»¥å­—ä¸ºå•ä½çš„æ•°ç»„ï¼Œå¹¶ç»™å‡ºé•¿åº¦
-# è¿”å›žå’Œï¼Œæ”¾åˆ°$v0
-# æ³¨æ„laä¸Žlwçš„åŒºåˆ«
+# ÊµÏÖÊý×éÇóºÍµÄº¯Êý
+# ÏÈ¸ø³öÒ»¸öÒÔ×ÖÎªµ¥Î»µÄÊý×é£¬²¢¸ø³ö³¤¶È
+# ·µ»ØºÍ£¬·Åµ½$v0
+# ×¢ÒâlaÓëlwµÄÇø±ð
 .data
-	#array1: .space  40 # 4*10ä¸ªæ•°å­—ï¼Œå•ä½æ˜¯word
+	#array1: .space  40 # 4*10¸öÊý×Ö£¬µ¥Î»ÊÇword
 	array1: .word 1,2,3,4,5,6,7,8,9,10
 	length: .word 10
 	result: .word 0
 .text
 __start:
-	la $a0, array1 # å‡½æ•°å‚æ•°1ï¼Œ æ•°ç»„å¤´æŒ‡é’ˆ
-	lw $a1, length # å‡½æ•°å‚æ•°2ï¼Œ æ•°ç»„é•¿åº¦
-	jal SUM  # ç»“æžœæ”¾åˆ°v0
+	la $a0, array1 # º¯Êý²ÎÊý1£¬ Êý×éÍ·Ö¸Õë
+	lw $a1, length # º¯Êý²ÎÊý2£¬ Êý×é³¤¶È
+	jal SUM  # ½á¹û·Åµ½v0
 	sw $v0, result
 	j EXIT	
 SUM:
-	move $t0, $zero  # t0è¦ç”¨æ¥è®¡æ•°ï¼Œå…ˆç½®ä¸º0
-	move $t1, $a0 # ä½œä¸ºæŒ‡å‘æ•°ç»„å…ƒç´ çš„æŒ‡é’ˆ
-LOOP:	beq $t0, $a1, DONE # å¦‚æžœè®¡æ•°å˜é‡ä¸Žé•¿åº¦ç›¸ç­‰ï¼Œå°±é€€å‡ºå¾ªçŽ¯
-	lw $t3, ($t1) #  ä»Žå­˜å‚¨åŒºå†…è¯»å–æŒ‡é’ˆæŒ‡å‘çš„æ•°å­—
+	move $t0, $zero  # t0ÒªÓÃÀ´¼ÆÊý£¬ÏÈÖÃÎª0
+	move $t1, $a0 # ×÷ÎªÖ¸ÏòÊý×éÔªËØµÄÖ¸Õë
+LOOP:	beq $t0, $a1, DONE # Èç¹û¼ÆÊý±äÁ¿Óë³¤¶ÈÏàµÈ£¬¾ÍÍË³öÑ­»·
+	lw $t3, ($t1) #  ´Ó´æ´¢ÇøÄÚ¶ÁÈ¡Ö¸ÕëÖ¸ÏòµÄÊý×Ö
 	add $v0, $v0, $t3
-	add $t1, $t1, 4 # è®©æŒ‡é’ˆæŒ‡å‘ä¸‹ä¸€ä¸ªæ•°å­—
-	add $t0, $t0, 1 # è®¡æ•°å™¨+1
+	add $t1, $t1, 4 # ÈÃÖ¸ÕëÖ¸ÏòÏÂÒ»¸öÊý×Ö
+	add $t0, $t0, 1 # ¼ÆÊýÆ÷+1
 	j LOOP
 DONE:	jr $ra
 EXIT:
