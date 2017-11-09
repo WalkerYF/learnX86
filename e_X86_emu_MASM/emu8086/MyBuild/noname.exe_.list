@@ -2,52 +2,66 @@ EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
  
 noname.exe_ -- emu8086 assembler version: 4.08  
  
-[ 2017/10/6 星期五  --  下午 8:45:07 ] 
+[ 2017/11/9 星期四  --  下午 8:06:18 ] 
  
 ===================================================================================================
 [LINE]     LOC: MACHINE CODE                          SOURCE
 ===================================================================================================
  
-[   1]        :                                       D SEGMENT
-[   2]    0000: 31 32 41 42                           PASS1 DB '12AB'
-[   3]    0004:                                       N EQU $-PASS1
-[   4]    0004: 50 41 53 53 57 4F 52 44 22 0D 0A 24   D1 DB 'PASSWORD?', 0DH, 0AH, '$'
-                                                    
-[   5]    0010: 14                                    PASS2 DB 20
-[   6]    0011: 00                                    DB 0
-[   7]    0012: 00 00 00 00 00 00 00 00 00 00 00 00   DB 20 DUP(0)
-                00 00 00 00 00 00 00 00             
-[   8]    0026: 0D 0A 4F 4B 24                        D2 DB 0DH,0AH, 'OK$'
-[   9]        :                                       D ENDS
-[  10]        :                                       C SEGMENT
-[  11]        :                                       ASSUME CS:C, DS:D, ES:D
-[  12]    0030: B8 00 00                              BG: MOV AX,D
-[  13]    0033: 8E D8                                 MOV DS,AX
-[  14]    0035: 8E C0                                 MOV ES,AX
-[  15]    0037: BA 04 00                              LEA DX,D1
-[  16]    003A: B4 09                                 MOV AH,9
-[  17]    003C: CD 21                                 INT 21H
-[  18]    003E: BA 10 00                              LEA DX,PASS2
-[  19]    0041: B4 0A                                 MOV AH,0AH
-[  20]    0043: CD 21                                 INT 21H
-[  21]    0045: BE 00 00                              LEA SI,PASS1
-[  22]    0048: BF 10 00                              LEA DI,PASS2
-[  23]    004B: 80 7D 01 04                           CMP BYTE PTR[DI+1],N
-[  24]    004F: 75 0B                                 JNE LAST
-[  25]    0051: B9 04 00                              MOV CX,N
-[  26]    0054: BF 12 00                              LEA DI,PASS2+2
-[  27]    0057: FC                                    CLD
-[  28]    0058: F3 A6                                 REPZ CMPSB
-[  29]    005A: 74 04                                 JZ DISOK
-[  30]    005C: B4 4C                                 LAST: MOV AH,4CH
-[  31]    005E: CD 21                                 INT 21H
-[  32]    0060: BA 26 00                              DISOK: LEA DX,D2
-[  33]    0063: B4 09                                 MOV AH,9
-[  34]    0065: CD 21                                 INT 21H
-[  35]    0067: EB F3                                 JMP LAST
-[  36]        :                                       C ENDS
-[  37]        :                                       END BG
-[  38]        :                                       
+[   1]        :                                       assume ds:data, cs:code
+[   2]        :                                       
+[   3]        :                                       data segment
+[   4]    0000: 77 65 6C 63 6F 6D 65 20 74 6F 20 6D   db 'welcome to masm!'
+                61 73 6D 21                         
+[   5]        :                                       data ends
+[   6]        :                                       
+[   7]        :                                       code segment
+[   8]    0010:                                       start:
+[   9]    0010: B8 00 00                              mov ax, data
+[  10]    0013: 8E D8                                 mov ds, ax
+[  11]    0015: B8 00 B8                              mov ax, 0B800H   ; 初始化 显存区域为段首地址
+[  12]    0018: 8E C0                                 mov es, ax
+[  13]        :                                       
+[  14]    001A: BB 80 06                              mov bx, 1664
+[  15]    001D: BE 00 00                              mov si, 0        ; 离显示区域首地址的偏移量
+[  16]    0020: B9 10 00                              mov cx, 16
+[  17]    0023:                                       char1:
+[  18]    0023: 8A 04                                 mov al, [si]      ; 低8位为显示的数据
+[  19]    0025: B4 82                                 mov ah, 10000010B ; 高八位为显示的格式
+[  20]    0027: 26 88 47 01                           mov es:[bx+1], al
+[  21]    002B: 26 88 27                              mov es:[bx], ah
+[  22]        :                                       ;mov es:[bx], ax
+[  23]    002E: 83 C3 02                              add bx, 2
+[  24]    0031: 46                                    inc si
+[  25]    0032: E2 EF                                 loop char1
+[  26]        :                                       
+[  27]    0034: BB 20 07                              mov bx, 1824
+[  28]    0037: BE 00 00                              mov si, 0
+[  29]    003A: B9 10 00                              mov cx, 16
+[  30]    003D:                                       char2:
+[  31]    003D: 8A 04                                 mov al, [si]
+[  32]    003F: B4 A4                                 mov ah, 10100100B
+[  33]    0041: 26 89 07                              mov es:[bx], ax
+[  34]    0044: 83 C3 02                              add bx, 2
+[  35]    0047: 46                                    inc si
+[  36]    0048: E2 F3                                 loop char2
+[  37]        :                                       
+[  38]    004A: BB C0 07                              mov bx, 1984
+[  39]    004D: BE 00 00                              mov si, 0
+[  40]    0050: B9 10 00                              mov cx, 16
+[  41]    0053:                                       char3:
+[  42]    0053: 8A 04                                 mov al, [si]
+[  43]    0055: B4 F1                                 mov ah, 11110001B
+[  44]    0057: 26 89 07                              mov es:[bx], ax
+[  45]    005A: 83 C3 02                              add bx, 2
+[  46]    005D: 46                                    inc si
+[  47]    005E: E2 F3                                 loop char3
+[  48]        :                                       
+[  49]    0060: B8 00 4C                              mov ax, 4C00H
+[  50]    0063: CD 21                                 int 21H
+[  51]        :                                       code ends
+[  52]        :                                       end start
+[  53]        :                                       
  
 ===================================================================================================
  
@@ -55,7 +69,7 @@ EXE HEADER - bytes from 0000 to 01FF inclusive.
 
 0000: 4D      -   exe signature (M)
 0001: 5A      -   exe signature (Z)
-0002: 69      -   bytes on last page (l.byte)
+0002: 65      -   bytes on last page (l.byte)
 0003: 00      -   bytes on last page (h.byte)
 0004: 02      -   512 byte pages in file (l.byte)
 0005: 00      -   512 byte pages in file (h.byte)
@@ -71,11 +85,11 @@ EXE HEADER - bytes from 0000 to 01FF inclusive.
 000F: 00      -   SS - stack segment (h.byte)
 0010: 00      -   SP - stack pointer (l.byte)
 0011: 00      -   SP - stack pointer (h.byte)
-0012: FC      -   check sum (l.byte)
-0013: B0      -   check sum (h.byte)
+0012: C2      -   check sum (l.byte)
+0013: B9      -   check sum (h.byte)
 0014: 00      -   IP - instruction pointer (l.byte)
 0015: 00      -   IP - instruction pointer (h.byte)
-0016: 03      -   CS - code segment (l.byte)
+0016: 01      -   CS - code segment (l.byte)
 0017: 00      -   CS - code segment (h.byte)
 0018: 1E      -   relocation table adress (l.byte)
 0019: 00      -   relocation table adress (h.byte)
@@ -85,7 +99,7 @@ EXE HEADER - bytes from 0000 to 01FF inclusive.
 001D: 00      -   signature (h.byte)
 001E: 01      -   relocation table - offset inside segment (l.byte)
 001F: 00      -   relocation table - offset inside segment (h.byte)
-0020: 03      -   relocation table - segment anchor (l.byte)
+0020: 01      -   relocation table - segment anchor (l.byte)
 0021: 00      -   relocation table - segment anchor (h.byte)
 0022 to 01FF  -   reserved relocation area  (00) 
 

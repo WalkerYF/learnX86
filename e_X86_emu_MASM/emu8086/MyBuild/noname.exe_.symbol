@@ -2,17 +2,13 @@
 ===================================================================================================
 Name                     	Offset    	Size      	Type      	Segment   
 ===================================================================================================
-D                        	00000     	-5        	SEGMENT   	(ITSELF)  
-PASS1                    	00000     	1         	VAR       	D         
-_LOCATION_COUNTER__N1_L2 	00004     	-1        	LABEL     	D         
-D1                       	00004     	1         	VAR       	D         
-PASS2                    	00010     	1         	VAR       	D         
-D2                       	00026     	1         	VAR       	D         
-C                        	00003     	-5        	SEGMENT   	(ITSELF)  
-BG                       	00000     	-1        	LABEL     	C         
-LAST                     	0002C     	-1        	LABEL     	C         
-DISOK                    	00030     	-1        	LABEL     	C         
+DATA                     	00000     	-5        	SEGMENT   	(ITSELF)  
+CODE                     	00001     	-5        	SEGMENT   	(ITSELF)  
+START                    	00000     	-1        	LABEL     	code      
+CHAR1                    	00013     	-1        	LABEL     	code      
+CHAR2                    	0002D     	-1        	LABEL     	code      
+CHAR3                    	00043     	-1        	LABEL     	code      
 ===================================================================================================
-[ 2017/10/6 星期五  --  下午 8:45:07 ] 
+[ 2017/11/9 星期四  --  下午 8:06:18 ] 
 < END >
  

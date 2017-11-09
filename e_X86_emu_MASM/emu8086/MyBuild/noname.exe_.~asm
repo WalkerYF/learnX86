@@ -1,38 +1,53 @@
-D SEGMENT
-PASS1 DB '12AB'
-N EQU $-PASS1
-D1 DB 'PASSWORD?', 0DH, 0AH, '$'
-PASS2 DB 20
-DB 0
-DB 20 DUP(0)
-D2 DB 0DH,0AH, 'OK$'
-D ENDS
-C SEGMENT
-ASSUME CS:C, DS:D, ES:D
-BG: MOV AX,D
-MOV DS,AX
-MOV ES,AX
-LEA DX,D1
-MOV AH,9
-INT 21H
-LEA DX,PASS2
-MOV AH,0AH
-INT 21H
-LEA SI,PASS1
-LEA DI,PASS2
-CMP BYTE PTR[DI+1],N
-JNE LAST
-MOV CX,N
-LEA DI,PASS2+2
-CLD
-REPZ CMPSB
-JZ DISOK
-LAST: MOV AH,4CH
-INT 21H
-DISOK: LEA DX,D2
-MOV AH,9
-INT 21H
-JMP LAST
-C ENDS
-END BG
+assume ds:data, cs:code
+
+data segment
+db 'welcome to masm!'
+data ends
+
+code segment
+start:
+mov ax, data
+mov ds, ax
+mov ax, 0B800H   ; 初始化 显存区域为段首地址
+mov es, ax
+
+mov bx, 1664
+mov si, 0        ; 离显示区域首地址的偏移量
+mov cx, 16
+char1:
+mov al, [si]      ; 低8位为显示的数据
+mov ah, 10000010B ; 高八位为显示的格式
+mov es:[bx+1], al
+mov es:[bx], ah
+;mov es:[bx], ax
+add bx, 2
+inc si
+loop char1
+
+mov bx, 1824
+mov si, 0
+mov cx, 16
+char2:
+mov al, [si]
+mov ah, 10100100B
+mov es:[bx], ax
+add bx, 2
+inc si
+loop char2
+
+mov bx, 1984
+mov si, 0
+mov cx, 16
+char3:
+mov al, [si]
+mov ah, 11110001B
+mov es:[bx], ax
+add bx, 2
+inc si
+loop char3
+
+mov ax, 4C00H
+int 21H
+code ends
+end start
 
