@@ -1,40 +1,36 @@
-; 建立 BOOT 文件的指令e:
-#MAKE_BOOT#
+assume cs:code
 
-; 启动区要求读入到 0000:7C00,
-; 通知编译器
-ORG 7C00h
-
-; 将信息地址存入 SI 寄存器:
-LEA SI, msg
-
-; teletype function id:
-MOV AH, 0Eh
-
-print:   MOV AL, [SI]
-CMP AL, 0
-JZ done
-INT 10h   ; print using teletype.
-INC SI
-JMP print
-
-; 等待任意键按下
-done:      MOV AH, 0
-INT 16h
+data segment
+dw 1,2,3,4,5,6,7,8
+dd 0,0,0,0,0,0,0,0
+data ends
 
 
-; store magic value at 0040h:0072h:
-;   0000h - cold boot.
-;   1234h - warm boot.
-MOV     AX, 0040h
-MOV     DS, AX
-MOV     w.[0072h], 0000h ; cold boot.
+code segment
+mov ax, data
+mov ds, ax
+mov si, 0      ; 指向第一组word单元
+mov di, 16     ; 指向第二组dword单元
 
-JMP    0FFFFh:0000h     ; reboot!
+mov cx, 8
+s:
+mov dx, [si]   ; 读取一个待立方的数到dx中
+call cube      ; 执行子过程，
+mov [di], ax
+mov [di+2], dx
+add si, 2
+add di, 4
+loop s
 
 
-new_line EQU 13, 10
 
-msg DB  'Hello This is My First Boot Program!'
-DB  new_line, 'Press any key to reboot', 0
+
+; 作用：计算立方
+; 参数：dx:被立方的数
+; 返回：[dx:ax]立方后的数
+cube:
+mov ax, dx
+mul dx
+mul dx
+ret
 

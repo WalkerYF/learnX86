@@ -2,66 +2,112 @@ EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
  
 noname.exe_ -- emu8086 assembler version: 4.08  
  
-[ 2017/11/9 星期四  --  下午 8:06:18 ] 
+[ 2017/11/11 星期六  --  下午 12:27:54 ] 
  
 ===================================================================================================
 [LINE]     LOC: MACHINE CODE                          SOURCE
 ===================================================================================================
  
-[   1]        :                                       assume ds:data, cs:code
-[   2]        :                                       
-[   3]        :                                       data segment
-[   4]    0000: 77 65 6C 63 6F 6D 65 20 74 6F 20 6D   db 'welcome to masm!'
-                61 73 6D 21                         
-[   5]        :                                       data ends
-[   6]        :                                       
-[   7]        :                                       code segment
-[   8]    0010:                                       start:
-[   9]    0010: B8 00 00                              mov ax, data
-[  10]    0013: 8E D8                                 mov ds, ax
-[  11]    0015: B8 00 B8                              mov ax, 0B800H   ; 初始化 显存区域为段首地址
-[  12]    0018: 8E C0                                 mov es, ax
-[  13]        :                                       
-[  14]    001A: BB 80 06                              mov bx, 1664
-[  15]    001D: BE 00 00                              mov si, 0        ; 离显示区域首地址的偏移量
-[  16]    0020: B9 10 00                              mov cx, 16
-[  17]    0023:                                       char1:
-[  18]    0023: 8A 04                                 mov al, [si]      ; 低8位为显示的数据
-[  19]    0025: B4 82                                 mov ah, 10000010B ; 高八位为显示的格式
-[  20]    0027: 26 88 47 01                           mov es:[bx+1], al
-[  21]    002B: 26 88 27                              mov es:[bx], ah
-[  22]        :                                       ;mov es:[bx], ax
-[  23]    002E: 83 C3 02                              add bx, 2
-[  24]    0031: 46                                    inc si
-[  25]    0032: E2 EF                                 loop char1
-[  26]        :                                       
-[  27]    0034: BB 20 07                              mov bx, 1824
-[  28]    0037: BE 00 00                              mov si, 0
-[  29]    003A: B9 10 00                              mov cx, 16
-[  30]    003D:                                       char2:
-[  31]    003D: 8A 04                                 mov al, [si]
-[  32]    003F: B4 A4                                 mov ah, 10100100B
-[  33]    0041: 26 89 07                              mov es:[bx], ax
-[  34]    0044: 83 C3 02                              add bx, 2
-[  35]    0047: 46                                    inc si
-[  36]    0048: E2 F3                                 loop char2
-[  37]        :                                       
-[  38]    004A: BB C0 07                              mov bx, 1984
-[  39]    004D: BE 00 00                              mov si, 0
-[  40]    0050: B9 10 00                              mov cx, 16
-[  41]    0053:                                       char3:
-[  42]    0053: 8A 04                                 mov al, [si]
-[  43]    0055: B4 F1                                 mov ah, 11110001B
-[  44]    0057: 26 89 07                              mov es:[bx], ax
-[  45]    005A: 83 C3 02                              add bx, 2
-[  46]    005D: 46                                    inc si
-[  47]    005E: E2 F3                                 loop char3
-[  48]        :                                       
-[  49]    0060: B8 00 4C                              mov ax, 4C00H
-[  50]    0063: CD 21                                 int 21H
-[  51]        :                                       code ends
-[  52]        :                                       end start
-[  53]        :                                       
+[   1]        :                                       assume cs:code, ss:stack
+[   2]        :                                       stack segment
+[   3]    0000: 00 00 00 00 00 00 00 00 00 00 00 00   dw 16 dup (0)
+                00 00 00 00 00 00 00 00 00 00 00 00 
+                00 00 00 00 00 00 00 00             
+[   4]        :                                       stack ends
+[   5]        :                                       
+[   6]        :                                       data segment
+[   7]    0020: 00 00 00 00 00 00 00 00 00 00         db 10 dup (0)
+[   8]        :                                       data ends
+[   9]        :                                       code segment
+[  10]    0030:                                       start:
+[  11]    0030: B8 02 00                              mov ax, data
+[  12]    0033: 8E D8                                 mov ds, ax
+[  13]    0035: B8 00 00                              mov ax, stack
+[  14]    0038: 8E D0                                 mov ss, ax
+[  15]    003A: BC 20 00                              mov sp, 32
+[  16]    003D: B8 7A 31                              mov ax, 12666
+[  17]    0040: BE 00 00                              mov si, 0
+[  18]    0043: E8 0E 00                              call dtoc
+[  19]    0046: B6 08                                 mov dh, 8
+[  20]    0048: B2 03                                 mov dl, 3
+[  21]    004A: B1 02                                 mov cl, 2
+[  22]    004C: E8 33 00                              call show_str
+[  23]    004F: B8 00 4C                              mov ax, 4c00h
+[  24]    0052: CD 21                                 int 21h
+[  25]    0054:                                       dtoc:
+[  26]    0054: 50                                    push ax
+[  27]    0055: 56                                    push si
+[  28]    0056: 57                                    push di
+[  29]    0057: 52                                    push dx
+[  30]    0058: 53                                    push bx
+[  31]    0059: 51                                    push cx
+[  32]    005A: BF 00 00                              mov di, 0
+[  33]    005D: BA 00 00                              mov dx, 0
+[  34]    0060: BB 0A 00                              mov bx, 10
+[  35]    0063:                                       devide:
+[  36]    0063: 8B C8                                 mov cx, ax
+[  37]    0065: E3 09                                 jcxz stop
+[  38]    0067: F7 F3                                 div bx
+[  39]    0069: 47                                    inc di
+[  40]    006A: 52                                    push dx
+[  41]    006B: BA 00 00                              mov dx, 0
+[  42]    006E: EB F3                                 jmp devide
+[  43]    0070:                                       stop:
+[  44]    0070: 8B CF                                 mov cx, di
+[  45]    0072:                                       string:
+[  46]    0072: 5B                                    pop bx
+[  47]    0073: 83 C3 30                              add bx, 30h
+[  48]    0076: 88 1C                                 mov [si], bl
+[  49]    0078: 46                                    inc si
+[  50]    0079: E2 F7                                 loop string
+[  51]    007B: 59                                    pop cx
+[  52]    007C: 5B                                    pop bx
+[  53]    007D: 5A                                    pop dx
+[  54]    007E: 5F                                    pop di
+[  55]    007F: 5E                                    pop si
+[  56]    0080: 58                                    pop ax
+[  57]    0081: C3                                    ret
+[  58]        :                                       
+[  59]    0082:                                       show_str:
+[  60]    0082: 51                                    push cx
+[  61]    0083: 53                                    push bx
+[  62]    0084: 50                                    push ax
+[  63]    0085: 56                                    push si
+[  64]    0086: 57                                    push di
+[  65]    0087: 06                                    push es
+[  66]        :                                       ;using cx, bx, ax, si, di, es
+[  67]    0088: B8 00 B8                              mov ax, 0b800h
+[  68]    008B: 8E C0                                 mov es, ax
+[  69]    008D: BB 00 00                              mov bx, 0
+[  70]    0090: BF 00 00                              mov di, 0
+[  71]    0093: B0 A0                                 mov al, 160
+[  72]    0095: F6 E6                                 mul dh
+[  73]    0097: 03 D8                                 add bx, ax
+[  74]    0099: B0 02                                 mov al, 2
+[  75]    009B: F6 E2                                 mul dl
+[  76]    009D: 03 D8                                 add bx, ax ;bx stores address of start character
+[  77]    009F: 8A C1                                 mov al, cl ;al stores the color of character
+[  78]    00A1:                                       char:
+[  79]    00A1: B5 00                                 mov ch, 0
+[  80]    00A3: 3E 8A 0C                              mov cl, ds:[si]
+[  81]    00A6: E3 0B                                 jcxz zero
+[  82]    00A8: 8A E8                                 mov ch, al
+[  83]    00AA: 26 89 09                              mov es:[bx+di], cx
+[  84]    00AD: 83 C7 02                              add di, 2
+[  85]    00B0: 46                                    inc si
+[  86]    00B1: EB EE                                 jmp char
+[  87]    00B3:                                       zero:
+[  88]    00B3: 07                                    pop es
+[  89]    00B4: 5F                                    pop di
+[  90]    00B5: 5E                                    pop si
+[  91]    00B6: 58                                    pop ax
+[  92]    00B7: 5B                                    pop bx
+[  93]    00B8: 59                                    pop cx
+[  94]    00B9: C3                                    ret
+[  95]        :                                       
+[  96]        :                                       code ends
+[  97]        :                                       end start
+[  98]        :                                       
  
 ===================================================================================================
  
@@ -69,11 +115,11 @@ EXE HEADER - bytes from 0000 to 01FF inclusive.
 
 0000: 4D      -   exe signature (M)
 0001: 5A      -   exe signature (Z)
-0002: 65      -   bytes on last page (l.byte)
+0002: BA      -   bytes on last page (l.byte)
 0003: 00      -   bytes on last page (h.byte)
 0004: 02      -   512 byte pages in file (l.byte)
 0005: 00      -   512 byte pages in file (h.byte)
-0006: 01      -   relocations (l.byte)
+0006: 02      -   relocations (l.byte)
 0007: 00      -   relocations (h.byte)
 0008: 20      -   paragraphs in header (l.byte)
 0009: 00      -   paragraphs in header (h.byte)
@@ -83,13 +129,13 @@ EXE HEADER - bytes from 0000 to 01FF inclusive.
 000D: FF      -   maximum memory (h.byte)
 000E: 00      -   SS - stack segment (l.byte)
 000F: 00      -   SS - stack segment (h.byte)
-0010: 00      -   SP - stack pointer (l.byte)
+0010: 20      -   SP - stack pointer (l.byte)
 0011: 00      -   SP - stack pointer (h.byte)
-0012: C2      -   check sum (l.byte)
-0013: B9      -   check sum (h.byte)
+0012: B0      -   check sum (l.byte)
+0013: 6A      -   check sum (h.byte)
 0014: 00      -   IP - instruction pointer (l.byte)
 0015: 00      -   IP - instruction pointer (h.byte)
-0016: 01      -   CS - code segment (l.byte)
+0016: 03      -   CS - code segment (l.byte)
 0017: 00      -   CS - code segment (h.byte)
 0018: 1E      -   relocation table adress (l.byte)
 0019: 00      -   relocation table adress (h.byte)
@@ -99,9 +145,13 @@ EXE HEADER - bytes from 0000 to 01FF inclusive.
 001D: 00      -   signature (h.byte)
 001E: 01      -   relocation table - offset inside segment (l.byte)
 001F: 00      -   relocation table - offset inside segment (h.byte)
-0020: 01      -   relocation table - segment anchor (l.byte)
+0020: 03      -   relocation table - segment anchor (l.byte)
 0021: 00      -   relocation table - segment anchor (h.byte)
-0022 to 01FF  -   reserved relocation area  (00) 
+0022: 06      -   relocation table - offset inside segment (l.byte)
+0023: 00      -   relocation table - offset inside segment (h.byte)
+0024: 03      -   relocation table - segment anchor (l.byte)
+0025: 00      -   relocation table - segment anchor (h.byte)
+0026 to 01FF  -   reserved relocation area  (00) 
 
 
 

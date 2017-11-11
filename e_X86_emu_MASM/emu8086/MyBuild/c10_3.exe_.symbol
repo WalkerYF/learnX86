@@ -1,14 +1,17 @@
-< THE SYMBOL TABLE >  noname.exe_  --  emu8086 assembler version: 4.08 
+< THE SYMBOL TABLE >  c10_3.exe_  --  emu8086 assembler version: 4.08 
 ===================================================================================================
 Name                     	Offset    	Size      	Type      	Segment   
 ===================================================================================================
 DATA                     	00000     	-5        	SEGMENT   	(ITSELF)  
 CODE                     	00001     	-5        	SEGMENT   	(ITSELF)  
 START                    	00000     	-1        	LABEL     	code      
-CHAR1                    	00013     	-1        	LABEL     	code      
-CHAR2                    	0002D     	-1        	LABEL     	code      
-CHAR3                    	00043     	-1        	LABEL     	code      
+CAPITAL                  	00013     	-1        	LABEL     	code      
+CAPITAL_I                	0001A     	-1        	LABEL     	code      
+OK                       	00026     	-1        	LABEL     	code      
+CAPITAL_I2               	00027     	-1        	LABEL     	code      
+CHANGE                   	00029     	-1        	LABEL     	code      
+OK_I2                    	00035     	-1        	LABEL     	code      
 ===================================================================================================
-[ 2017/11/9 星期四  --  下午 8:06:18 ] 
+[ 2017/11/11 星期六  --  上午 11:36:50 ] 
 < END >
  

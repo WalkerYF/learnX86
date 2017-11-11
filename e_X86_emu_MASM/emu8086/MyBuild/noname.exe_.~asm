@@ -1,53 +1,98 @@
-assume ds:data, cs:code
+assume cs:code, ss:stack
+stack segment
+dw 16 dup (0)
+stack ends
 
 data segment
-db 'welcome to masm!'
+db 10 dup (0)
 data ends
-
 code segment
 start:
 mov ax, data
 mov ds, ax
-mov ax, 0B800H   ; 初始化 显存区域为段首地址
+mov ax, stack
+mov ss, ax
+mov sp, 32
+mov ax, 12666
+mov si, 0
+call dtoc
+mov dh, 8
+mov dl, 3
+mov cl, 2
+call show_str
+mov ax, 4c00h
+int 21h
+dtoc:
+push ax
+push si
+push di
+push dx
+push bx
+push cx
+mov di, 0
+mov dx, 0
+mov bx, 10
+devide:
+mov cx, ax
+jcxz stop
+div bx
+inc di
+push dx
+mov dx, 0
+jmp devide
+stop:
+mov cx, di
+string:
+pop bx
+add bx, 30h
+mov [si], bl
+inc si
+loop string
+pop cx
+pop bx
+pop dx
+pop di
+pop si
+pop ax
+ret
+
+show_str:
+push cx
+push bx
+push ax
+push si
+push di
+push es
+;using cx, bx, ax, si, di, es
+mov ax, 0b800h
 mov es, ax
-
-mov bx, 1664
-mov si, 0        ; 离显示区域首地址的偏移量
-mov cx, 16
-char1:
-mov al, [si]      ; 低8位为显示的数据
-mov ah, 10000010B ; 高八位为显示的格式
-mov es:[bx+1], al
-mov es:[bx], ah
-;mov es:[bx], ax
-add bx, 2
+mov bx, 0
+mov di, 0
+mov al, 160
+mul dh
+add bx, ax
+mov al, 2
+mul dl
+add bx, ax ;bx stores address of start character
+mov al, cl ;al stores the color of character
+char:
+mov ch, 0
+mov cl, ds:[si]
+jcxz zero
+mov ch, al
+mov es:[bx+di], cx
+add di, 2
 inc si
-loop char1
+jmp char
+zero:
+pop es
+pop di
+pop si
+pop ax
+pop bx
+pop cx
+ret
 
-mov bx, 1824
-mov si, 0
-mov cx, 16
-char2:
-mov al, [si]
-mov ah, 10100100B
-mov es:[bx], ax
-add bx, 2
-inc si
-loop char2
-
-mov bx, 1984
-mov si, 0
-mov cx, 16
-char3:
-mov al, [si]
-mov ah, 11110001B
-mov es:[bx], ax
-add bx, 2
-inc si
-loop char3
-
-mov ax, 4C00H
-int 21H
 code ends
 end start
 
