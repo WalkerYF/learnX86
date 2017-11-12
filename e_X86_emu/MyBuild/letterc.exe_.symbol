@@ -1,0 +1,15 @@
+< THE SYMBOL TABLE >  letterc.exe_  --  emu8086 assembler version: 4.08 
+===================================================================================================
+Name                     	Offset    	Size      	Type      	Segment   
+===================================================================================================
+DATA                     	00000     	-5        	SEGMENT   	(ITSELF)  
+CODE                     	00002     	-5        	SEGMENT   	(ITSELF)  
+START                    	00000     	-1        	LABEL     	code      
+LETTERC                  	00010     	-1        	LABEL     	code      
+LETTERC_CHANGE           	00012     	-1        	LABEL     	code      
+NEXT_LETTER              	00026     	-1        	LABEL     	code      
+EXIT_LETTERC             	00029     	-1        	LABEL     	code      
+===================================================================================================
+[ 2017/11/12 ÐÇÆÚÈÕ  --  ÉÏÎç 10:57:49 ] 
+< END >
+ 

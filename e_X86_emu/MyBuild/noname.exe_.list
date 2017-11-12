@@ -1,0 +1,111 @@
+EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
+ 
+noname.exe_ -- emu8086 assembler version: 4.08  
+ 
+[ 2017/11/12 星期日  --  上午 10:55:04 ] 
+ 
+===================================================================================================
+[LINE]     LOC: MACHINE CODE                          SOURCE
+===================================================================================================
+ 
+[   1]        :                                       assume cs:code
+[   2]        :                                       
+[   3]        :                                       data segment
+[   4]    0000: 61 73 64 66 73 20 61 73 39 32 33 34   db 'asdfs as9234 asdf',0
+                20 61 73 64 66 00                   
+[   5]        :                                       data ends
+[   6]        :                                       
+[   7]        :                                       code segment
+[   8]    0020:                                       start:
+[   9]    0020: B8 00 00                              mov ax, data
+[  10]    0023: 8E D8                                 mov ds, ax
+[  11]        :                                       
+[  12]    0025: BE 00 00                              mov si, 0
+[  13]    0028: E8 05 00                              call letterc
+[  14]        :                                       
+[  15]    002B: B8 00 4C                              mov ax, 4c00h
+[  16]    002E: CD 21                                 int 21h
+[  17]        :                                       
+[  18]        :                                       ; arg: the first address of string (si)
+[  19]    0030:                                       letterc:
+[  20]    0030: 51                                    push cx
+[  21]    0031: 50                                    push ax
+[  22]        :                                       
+[  23]    0032:                                       letterc_change:
+[  24]    0032: 8A 0C                                 mov cl, [si]           ; if the letter is 0, then exit the program
+[  25]    0034: B5 00                                 mov ch, 0
+[  26]    0036: E3 11                                 jcxz exit_letterc
+[  27]        :                                       
+[  28]    0038: 8A 04                                 mov al, [si]           ; read the charecter and save in reg al
+[  29]        :                                       
+[  30]    003A: 3C 61                                 cmp al, 97             ; if small than 97'a' or bigger than 122'z' then read next letter
+[  31]    003C: 72 08                                 jb next_letter
+[  32]    003E: 3C 7A                                 cmp al, 122
+[  33]    0040: 77 04                                 ja next_letter
+[  34]        :                                       
+[  35]    0042: 24 DF                                 and al, 11011111b      ; change into 大写
+[  36]        :                                       
+[  37]    0044: 88 04                                 mov [si], al           ; write into memory
+[  38]        :                                       
+[  39]    0046:                                       next_letter:
+[  40]    0046: 46                                    inc si
+[  41]    0047: EB E9                                 jmp letterc_change
+[  42]        :                                       
+[  43]    0049:                                       exit_letterc:
+[  44]    0049: 58                                    pop ax
+[  45]    004A: 59                                    pop cx
+[  46]    004B: C3                                    ret
+[  47]        :                                       
+[  48]        :                                       
+[  49]        :                                       
+[  50]        :                                       
+[  51]        :                                       
+[  52]        :                                       code ends
+[  53]        :                                       
+[  54]        :                                       end start
+[  55]        :                                       
+ 
+===================================================================================================
+ 
+EXE HEADER - bytes from 0000 to 01FF inclusive.
+
+0000: 4D      -   exe signature (M)
+0001: 5A      -   exe signature (Z)
+0002: 4C      -   bytes on last page (l.byte)
+0003: 00      -   bytes on last page (h.byte)
+0004: 02      -   512 byte pages in file (l.byte)
+0005: 00      -   512 byte pages in file (h.byte)
+0006: 01      -   relocations (l.byte)
+0007: 00      -   relocations (h.byte)
+0008: 20      -   paragraphs in header (l.byte)
+0009: 00      -   paragraphs in header (h.byte)
+000A: 00      -   minimum memory (l.byte)
+000B: 00      -   minimum memory (h.byte)
+000C: FF      -   maximum memory (l.byte)
+000D: FF      -   maximum memory (h.byte)
+000E: 00      -   SS - stack segment (l.byte)
+000F: 00      -   SS - stack segment (h.byte)
+0010: 00      -   SP - stack pointer (l.byte)
+0011: 00      -   SP - stack pointer (h.byte)
+0012: 4B      -   check sum (l.byte)
+0013: 4A      -   check sum (h.byte)
+0014: 00      -   IP - instruction pointer (l.byte)
+0015: 00      -   IP - instruction pointer (h.byte)
+0016: 02      -   CS - code segment (l.byte)
+0017: 00      -   CS - code segment (h.byte)
+0018: 1E      -   relocation table adress (l.byte)
+0019: 00      -   relocation table adress (h.byte)
+001A: 00      -   overlay number (l.byte)
+001B: 00      -   overlay number (h.byte)
+001C: 01      -   signature (l.byte)
+001D: 00      -   signature (h.byte)
+001E: 01      -   relocation table - offset inside segment (l.byte)
+001F: 00      -   relocation table - offset inside segment (h.byte)
+0020: 02      -   relocation table - segment anchor (l.byte)
+0021: 00      -   relocation table - segment anchor (h.byte)
+0022 to 01FF  -   reserved relocation area  (00) 
+
+
+
+
+===================================================================================================
