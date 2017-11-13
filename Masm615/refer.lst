@@ -1,0 +1,1025 @@
+Microsoft (R) Macro Assembler Version 6.15.8803		    11/13/17 11:09:57
+refer.asm						     Page 1 - 1
+
+
+ 0000				datas segment
+ 0000 0096 00B4				plane_pos dw 150,180		;飞机位置存储
+ 0004 0A 03 0C 04 0F 02			smile_pos db 10,3,12,4,15,2,19,4,21,1,25,5,28,3,30,1,9,2,7,5,1,2,33,3,35,2,0,0		;笑脸位置存储(y,x)
+       13 04 15 01 19 05
+       1C 03 1E 01 09 02
+       07 05 01 02 21 03
+       23 02 00 00
+ 0020 00				destroy	  db 0			;是否有目标
+ 0021 00				delay_timer db 0
+ 0022 12				timecontrol db 18		;用于控制速度快慢
+ 0023 59 6F 75 72 20 73			message db 'Your score:','$'
+       63 6F 72 65 3A 24
+ 002F  0003 [				score db 3 dup('0'),'$';分数的ASCII码，用于显示
+        30
+       ] 24
+ 0033 00			    	score_b db 00h;分数的二进制码，用于运算
+					;用于画游戏开始菜单
+ 0034 2A 2A 2A 2A 2A 2A		    	message_welcome db '*************** welcome ***************','$'
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 20 77 65
+       6C 63 6F 6D 65 20
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 24
+ 005C 68 6F 77 20 74 6F		    	message_operation db "how to play:",'$'
+       20 70 6C 61 79 3A
+       24
+ 0069 6D 6F 76 65 3A 6C		    	message_operation1 db "move:left right up and down",'$'
+       65 66 74 20 72 69
+       67 68 74 20 75 70
+       20 61 6E 64 20 64
+       6F 77 6E 24
+ 0085 73 68 6F 6F 74 3A		    	message_operation2 db 'shoot:space bar','$'
+       73 70 61 63 65 20
+       62 61 72 24
+ 0095 73 63 6F 72 65 3A				message_operation3 db 'score: hit(+1) escape(-5) collide(GameOver)','$'
+       20 68 69 74 28 2B
+       31 29 20 65 73 63
+       61 70 65 28 2D 35
+       29 20 63 6F 6C 6C
+       69 64 65 28 47 61
+       6D 65 4F 76 65 72
+       29 24
+ 00C1 4E 6F 77 2C 79 6F		    	message_operation4 db 'Now,you can:','$'
+       75 20 63 61 6E 3A
+       24
+ 00CE 70 72 65 73 73 20		    	start_button db "press 'Enter' to start the game$"
+       27 45 6E 74 65 72
+       27 20 74 6F 20 73
+       74 61 72 74 20 74
+       68 65 20 67 61 6D
+       65 24
+ 00EE 70 72 65 73 73 20		    	end_button db "press 'Esc' to quit(also in the game).$"
+       27 45 73 63 27 20
+       74 6F 20 71 75 69
+       74 28 61 6C 73 6F
+       20 69 6E 20 74 68
+       65 20 67 61 6D 65
+       29 2E 24
+ 0115 2A 2A 2A 2A 2A 2A		    	message_end db '********13349152 Zhang Huajian*********','$'
+       2A 2A 31 33 33 34
+       39 31 35 32 20 5A
+       68 61 6E 67 20 48
+       75 61 6A 69 61 6E
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 24
+ 013D 31 2E 65 61 73 79			message_easy db "1.easy",'$'
+       24
+ 0144 32 2E 6D 69 64 64			message_mid db "2.middle",'$'
+       6C 65 24
+ 014D 33 2E 68 61 72 64			message_hard db "3.hard",'$'
+       24
+ 0154 34 2E 76 65 72 79			message_veryhard db "4.veryhard",'$'
+       68 61 72 64 24
+ 015F 70 6C 65 61 73 65			message_choose db "please choose:",'$'
+       20 63 68 6F 6F 73
+       65 3A 24
+ 016E 2A 2A 2A 2A 2A 2A			    message_over1 db '****************************','$'
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 2A 24
+ 018B 2A 2A 2A 2A 2A 2A				message_over2 db '*******   GAME OVER  *******','$'
+       2A 20 20 20 47 41
+       4D 45 20 4F 56 45
+       52 20 20 2A 2A 2A
+       2A 2A 2A 2A 24
+ 01A8 2A 2A 2A 2A 2A 2A		    	message_over3 db '****************************','$'
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 2A 2A 2A
+       2A 2A 2A 2A 24
+ 01C5				datas ends
+
+ 0000				codes segment
+					assume cs:codes,ds:datas
+
+
+ 0000				start:
+ 0000  B0 34			    	mov al,34h   ; 设控制字值 
+refer.asm(35) : warning A4012: line number information for segment without class 'CODE' : codes
+ 0002  E6 43			    	out 43h,al   ; 写控制字到控制字寄存器 
+ 0004  B8 FFFF			    	mov ax,0ffffh ; 中断时间设置
+ 0007  E6 40			    	out 40h,al   ; 写计数器 0 的低字节 
+ 0009  8A C4			    	mov al,ah    ; AL=AH 
+ 000B  E6 40			    	out 40h,al   ; 写计数器 0 的高字节 
+
+ 000D  B8 ---- R			mov ax,datas
+ 0010  8E D8				mov ds,ax
+ 0012  E8 0302			    	call help_view       
+ 0015  E8 03B8				call choose_view
+
+ 0018  33 C0				xor ax,ax			; AX = 0
+ 001A  8E D8				mov ds,ax			; DS = 0
+ 001C  C7 06 0020 00A5 R		mov word ptr ds:[20h],offset Timer	; 设置时钟中断向量的偏移地址
+ 0022  8C C8				mov ax,cs 
+ 0024  A3 0022				mov word ptr ds:[22h],ax		; 设置时钟中断向量的段地址=CS
+						   
+ 0027  B8 ---- R			mov ax,datas
+ 002A  8E D8				mov ds,ax  
+						 
+ 002C  B4 00			        mov ah,00H		;设置显示方式为320*200彩色图形方式
+ 002E  B0 04			        mov al,04H
+ 0030  CD 10			        int 10H 
+				        
+ 0032  B4 02					mov ah,02;显示分数提示
+ 0034  B7 00					mov bh,00
+ 0036  B6 00					mov dh,0
+ 0038  B2 00					mov dl,0
+ 003A  CD 10					int 10h
+ 003C  B4 09					mov ah,09
+ 003E  BA 0023 R				mov dx,offset message
+ 0041  CD 21					int 21h
+						
+ 0043  BB 0096			        mov bx,150   ;设置飞机初始水平位置
+ 0046  BD 00B4			       	mov bp,180   ;设置飞机初始垂直位置
+ 0049  89 1E 0000 R		        mov [plane_pos],bx
+ 004D  89 2E 0002 R		        mov [plane_pos+2],bp      
+ 0051  E8 00C8					call play_smile		;画笑脸
+ 0054				lop3: 
+ 0054  E8 00AF			      	call play_plane1	;擦除飞机轨迹
+ 0057  E8 006E			      	call play_plane		;画飞机		
+ 005A  8B CB			      	mov cx,bx
+ 005C  8B D5			      	mov dx,bp
+ 005E				again:		
+ 005E  B4 01					mov ah,01      ;检测是否有按键，没有的话循环检测
+ 0060  CD 16					int 16h
+ 0062  74 FA					jz again		;没有按键，显示移动，再次检测
+				        ;从键盘读入字符          
+ 0064  B4 00			      	mov ah,0H	
+ 0066  CD 16			      	int 16H
+					 	  
+				        ;判断字符
+ 0068  80 FC 48			      	cmp ah,72
+ 006B  74 1B			      	je up
+ 006D  80 FC 50			      	cmp ah,80
+ 0070  74 1B			      	je down
+ 0072  80 FC 4B			      	cmp ah,75
+ 0075  74 1B			      	je left
+ 0077  80 FC 4D			      	cmp ah,77
+ 007A  74 1B			      	je right
+ 007C  80 FC 39				cmp ah,57	;空格
+ 007F  74 1B				je shoot
+ 0081  80 FC 10			      	cmp ah,16	;Q退出
+ 0084  74 1B			      	je quite
+ 0086  EB CC			      	jmp lop3
+
+ 0088  83 ED 03			up: 	sub bp,3
+ 008B  EB C7			      	jmp lop3
+ 008D  83 C5 03			down: 	add bp,3
+ 0090  EB C2			      	jmp lop3
+ 0092  83 EB 03			left: 	sub bx,3 
+ 0095  EB BD			       	jmp lop3
+ 0097  83 C3 03			right: 	add bx,3
+ 009A  EB B8			        jmp lop3   
+
+ 009C				shoot:
+ 009C  E8 0140				call shoot_plane
+ 009F  EB B3				jmp lop3
+
+				;退出程序
+ 00A1				quite:   
+ 00A1  B4 4C				mov ah,4ch
+ 00A3  CD 21				int 21h
+				    
+
+
+ 00A5				Timer:
+ 00A5  50				push ax
+ 00A6  A0 0022 R			mov al,byte ptr ds:[timecontrol]
+ 00A9  38 06 0021 R			cmp byte ptr ds:[delay_timer],al
+ 00AD  58				pop ax
+ 00AE  75 0B				jnz	goout
+ 00B0  C6 06 0021 R 00			mov byte ptr ds:[delay_timer],0
+ 00B5  E8 0096				call move_smile
+					;call delay2
+ 00B8  E8 0061				call play_smile		;画笑脸
+ 00BB				goout:
+ 00BB  FE 06 0021 R			inc byte ptr [delay_timer]
+ 00BF  50				push ax
+ 00C0  B0 20				mov al,20h			; AL = EOI
+ 00C2  E6 20				out 20h,al			; 发送EOI到主8529A
+ 00C4  E6 A0				out 0A0h,al			; 发送EOI到从8529A
+ 00C6  58				pop ax
+ 00C7  CF				iret			; 从中断返回
+
+
+				    
+				;//////////////////////////////////////
+				;//画玩家飞机子程序 传入参数bx设置飞机的水平位置 BP设置飞机的垂直位置   BX,BP记录飞机的位置
+ 00C8				play_plane proc    
+ 00C8  51				push cx
+ 00C9  52				push dx
+ 00CA  06				push es
+ 00CB  56				push si
+ 00CC  57				push di
+ 00CD  50				push ax
+ 00CE  EB 00				jmp sk
+
+ 00D0				play_plane_1: dw 6,1,1,5,2,3,5,3,3,5,4,3,4,5,5,3,6,7,1,7,11,1,8,11,4,9,5,5,10,3,4,11,5,3,12,7,4,13,2,7,13,2 ;X0,Y,长度
+refer.asm(154) : error A2008: syntax error : dw
+
+ 00D0				sk: 
+ 00D0  8B C8				mov cx,ax
+ 00D2  8C C8				mov ax,cs
+ 00D4  8E C0				mov es,ax
+ 00D6  BF 0000				mov di,0
+				         
+ 00D9				lop2: 
+ 00D9  26: 8B 8D 00D0 R			mov cx,word ptr es:[play_plane_1+di]    ;x0
+ 00DE  03 CB			        add cx,bx
+ 00E0  26: 8B 95 00D2 R		        mov dx,word ptr es:[play_plane_1+di+2]   ;y
+ 00E5  03 D5			        add dx,bp
+ 00E7  26: 8B B5 00D4 R		        mov si,word ptr es:[play_plane_1+di+4]    ;长度
+				        
+ 00EC  E8 01C0			     	call sp_line
+ 00EF  83 C7 06			     	add di,6
+ 00F2  83 FF 54			     	cmp di,84
+ 00F5  75 E2			     	jne lop2
+				     	
+					;更新飞机位置
+ 00F7  89 1E 0000 R			mov ds:[plane_pos],bx
+ 00FB  89 2E 0002 R		        mov ds:[plane_pos+2],bp 
+
+ 00FF  58			     	pop ax 
+ 0100  5F			     	pop di
+ 0101  5E			     	pop si
+ 0102  07			     	pop es
+ 0103  5A			     	pop dx
+ 0104  59			     	pop CX
+				   
+ 0105  C3			     	ret
+ 0106				play_plane endp
+				;//////////////////////      
+
+				    
+ 0106				play_plane1 proc ;擦除飞机轨迹子程序 传入参数CX,DX
+				     
+ 0106  56			      push si
+ 0107  57			      push di
+				   
+ 0108  41			      inc cx
+ 0109  BE 000D			      mov si,13
+				      
+ 010C  BF 0000			      mov di,0
+ 010F  47			lop5: inc di
+ 0110  42			      inc dx
+ 0111  E8 01AC			      call sp_line1
+ 0114  83 FF 0E			      cmp di,14
+ 0117  75 F6			      jne lop5
+ 0119  5F			      pop di
+ 011A  5E			      pop si
+
+ 011B  C3			      ret
+ 011C				play_plane1 endp
+				;////////////////////////////////////////
+
+				;//画笑脸
+ 011C				play_smile proc
+ 011C  50				push ax
+ 011D  53				push bx
+ 011E  51				push cx
+ 011F  52				push dx
+ 0120  56				push si
+ 0121  57				push di
+
+ 0122  BE 0004 R			mov si,offset smile_pos
+ 0125  46				inc si
+ 0126  BF 0004 R			mov di,offset smile_pos
+ 0129				show_smile:	
+					;设置光标位置
+ 0129  B4 02				mov ah,02H
+ 012B  B7 00				mov bh,0
+ 012D  8A 34				mov dh,byte ptr [si]		;Y
+ 012F  8A 15				mov dl,byte ptr [di]		;X
+ 0131  CD 10				int 10H
+					;显示笑脸
+ 0133  B4 09			        mov ah,09H
+ 0135  B0 02			        mov al,2
+ 0137  B3 F9			        mov bl,011111001b
+ 0139  B9 0001			        mov	cx,1
+ 013C  CD 10			        int 10H
+ 013E  46				inc si
+ 013F  46				inc si
+ 0140  47				inc di
+ 0141  47				inc di
+ 0142  80 3C 00				cmp byte ptr [si],0
+ 0145  75 E2				jnz show_smile
+					
+ 0147  5F				pop di
+ 0148  5E				pop si
+ 0149  5A				pop dx
+ 014A  59				pop cx
+ 014B  5B				pop bx
+ 014C  58				pop ax
+ 014D  C3				ret
+ 014E				play_smile endp
+
+				;//移动笑脸，包括修改笑脸的位置坐标，擦除笑脸，检测边界（执行扣分）操作
+ 014E				move_smile proc
+ 014E  50				push ax
+ 014F  53				push bx
+ 0150  51				push cx
+ 0151  52				push dx
+ 0152  56				push si
+ 0153  57				push di
+					;call delay2	
+ 0154  BE 0004 R			mov si,offset smile_pos
+ 0157  46				inc si
+ 0158  BF 0004 R			mov di,offset smile_pos
+ 015B				erase_smile:	
+					;设置光标位置
+ 015B  B4 02				mov ah,02H
+ 015D  B7 00				mov bh,0
+ 015F  8A 34				mov dh,byte ptr [si]		;行
+ 0161  8A 15				mov dl,byte ptr [di]		;列
+ 0163  CD 10				int 10H
+					;擦除笑脸
+ 0165  B4 09			        mov ah,09H
+ 0167  B0 02			        mov al,2	
+ 0169  B3 00			        mov bl,0	;黑色，擦除笑脸
+ 016B  B9 0001			        mov cx,1
+ 016E  CD 10			        int 10H
+						
+					;检测碰撞	
+ 0170  A1 0000 R			mov ax,word ptr [plane_pos]	;列
+ 0173  B3 08				mov bl,8
+ 0175  F6 F3				div bl 			;ax为转换后的飞机坐标
+ 0177  38 D0				cmp al,dl
+ 0179  74 0C				jz  row 
+ 017B  FE C0				inc al
+ 017D  38 D0				cmp al,dl
+ 017F  74 06				jz row	
+ 0181  FE C0				inc al
+ 0183  38 D0				cmp al,dl
+ 0185  75 0E				jnz notexit
+ 0187				row:
+ 0187  A1 0002 R			mov ax,word ptr [plane_pos+2]	;行
+ 018A  B3 08				mov bl,8
+ 018C  F6 F3				div bl 			;ax为转换后的飞机坐标
+ 018E  38 F0				cmp al,dh
+ 0190  75 03 E9 031B			jz endthegame
+ 0195				notexit:		
+					;移动笑脸坐标	
+ 0195  FE 04				inc byte ptr [si]
+ 0197  80 3C 19				cmp byte ptr [si],25
+ 019A  75 33				jnz goon
+ 019C  C6 04 01				mov byte ptr [si],1	;碰到边界
+ 019F  33 C0				xor ax,ax
+ 01A1  A0 0033 R			mov al,byte ptr ds:[score_b]
+ 01A4  3C 05				cmp al,5	
+ 01A6  73 03 E9 0305			jb	endthegame		;小于5，扣分后负数，游戏结束
+					;扣分
+ 01AB  2C 05				sub al,5
+ 01AD  A2 0033 R			mov byte ptr ds:[score_b],al	;一个扣5分	
+ 01B0  50				push ax
+ 01B1  56				push si
+ 01B2  53				push bx
+ 01B3  52				push dx	
+ 01B4  BE 002F R			mov si,offset score
+ 01B7  E8 02D2				call b2asc
+ 01BA  B4 02				mov ah,02	;显示具体分数
+ 01BC  B7 00			    mov bh,00
+ 01BE  B6 00			    mov dh,0
+ 01C0  B2 0B			    mov dl,11
+ 01C2  CD 10			    int 10h
+ 01C4  B4 09			    mov ah,09
+ 01C6  BA 002F R		    mov dx,offset score
+ 01C9  CD 21			    int 21h
+ 01CB  5A				pop dx
+ 01CC  5B				pop bx
+ 01CD  5E				pop si
+ 01CE  58				pop ax
+					
+ 01CF				goon:
+ 01CF  46				inc si
+ 01D0  46				inc si
+ 01D1  47				inc di
+ 01D2  47				inc di
+ 01D3  80 3C 00				cmp byte ptr [si],0
+ 01D6  75 83				jnz erase_smile
+					
+ 01D8  5F				pop di
+ 01D9  5E				pop si
+ 01DA  5A				pop dx
+ 01DB  59				pop cx
+ 01DC  5B				pop bx
+ 01DD  58				pop ax
+ 01DE  C3				ret
+ 01DF				move_smile endp
+
+				;//////////////发射子弹子程序
+				;入口参数 玩家飞机发射口的坐标bx+5,bp
+ 01DF				shoot_plane proc
+ 01DF  50				push ax
+ 01E0  53				push bx
+ 01E1  51				push cx
+ 01E2  52				push dx
+ 01E3  56				push si
+ 01E4  55				push bp
+ 01E5  8B CB				mov cx,bx
+ 01E7  83 C1 05			 	add cx,5	;x坐标BX+5
+ 01EA  8B D5				mov dx,bp	;y坐标	
+ 01EC  4A				dec	dx
+ 01ED  52				push dx
+					;检查这一列是否有射击目标
+ 01EE  BE 0004 R			mov si,offset smile_pos	
+ 01F1				lop7:
+ 01F1  B8 0000				mov ax,0
+ 01F4  8A 04				mov al,byte ptr [si]
+ 01F6  83 F8 00				cmp ax,0
+ 01F9  74 43				jz next
+ 01FB  B3 08				mov bl,8
+ 01FD  F6 E3				mul bl		;40*25转换
+ 01FF  BA 0009				mov dx,9
+ 0202				lop8:
+ 0202  3B C1				cmp ax,cx	;是否同一列
+ 0204  74 08				jz same
+ 0206  40				inc ax
+ 0207  4A				dec dx
+ 0208  75 F8				jnz lop8
+ 020A  46				inc si 
+ 020B  46				inc si
+ 020C  EB E3				jmp lop7
+
+ 020E				same:	
+					;这一列有目标,消灭
+ 020E  C6 06 0020 R 01			mov byte ptr ds:[destroy],1
+ 0213  50				push ax
+ 0214  56				push si
+ 0215  53				push bx
+ 0216  52				push dx
+ 0217  33 C0				xor ax,ax
+ 0219  A0 0033 R			mov al,byte ptr ds:[score_b]
+ 021C  04 01				add al,1
+ 021E  A2 0033 R			mov byte ptr ds:[score_b],al
+ 0221  BE 002F R			mov si,offset score
+ 0224  E8 0265				call b2asc
+ 0227  B4 02				mov ah,02;显示具体分数
+ 0229  B7 00			    mov bh,00
+ 022B  B6 00			    mov dh,0
+ 022D  B2 0B			    mov dl,11
+ 022F  CD 10			    int 10h
+ 0231  B4 09			    mov ah,09
+ 0233  BA 002F R		    mov dx,offset score
+ 0236  CD 21			    int 21h
+ 0238  5A				pop dx
+ 0239  5B				pop bx
+ 023A  5E				pop si
+ 023B  58				pop ax
+ 023C  EB 00				jmp next
+
+ 023E				next:	
+ 023E  5A				pop dx
+ 023F				a0: 
+					;擦除炮弹轨迹，移动炮弹
+ 023F  BB 0002				MOV BX,2	;宽度
+ 0242  42				INC DX
+ 0243  B4 0C			a1:	MOV AH,0CH	;在绘图模式显示一点
+ 0245  B0 00				MOV AL,0	;颜色	
+ 0247  CD 10				INT 10H
+ 0249  41				INC CX
+ 024A  4B				DEC BX
+ 024B  75 F6				JNZ a1		;擦除炮弹宽度
+ 024D  83 E9 02			 	SUB CX,2
+ 0250  BB 0002				MOV BX,2
+ 0253  4A				DEC DX
+					
+ 0254  B4 0C			a2:	MOV AH,0CH	;在绘图模式显示一点
+ 0256  B0 0B				MOV AL,11	;颜色	
+ 0258  CD 10				INT 10H
+ 025A  41				INC CX
+ 025B  4B				DEC BX
+ 025C  75 F6				JNZ a2		;画出炮弹宽度
+ 025E  83 E9 02			 	SUB CX,2
+ 0261  E8 0085				CALL delay
+ 0264  4A				DEC DX
+ 0265  83 FA 06				CMP DX,6	;循环画炮弹,到顶端才停止
+ 0268  77 D5				JA a0
+ 026A  80 3E 0020 R 00			cmp byte ptr ds:[destroy],0
+ 026F  74 1F				jz notdes
+
+					;设置光标位置
+ 0271  B4 02				MOV AH,02H
+ 0273  B7 00				MOV BH,0
+ 0275  8A 74 01				MOV DH,byte ptr [si+1]		
+ 0278  8A 14				MOV DL,byte ptr [si]
+ 027A  CD 10				INT 10H
+					;擦除笑脸
+ 027C  B4 09			    MOV AH,09H
+ 027E  B0 02			    MOV AL,2	
+ 0280  B3 00			    MOV BL,0	;黑色，擦除笑脸
+ 0282  B9 0001			    MOV CX,1
+ 0285  CD 10			    INT 10H
+ 0287  C6 44 01 01			mov byte ptr [si+1],1	;从顶端重新出现
+ 028B  C6 06 0020 R 00			mov byte ptr ds:[destroy],0
+ 0290				notdes:	
+					;最后一次擦除
+ 0290  8B EC				mov bp,sp
+ 0292  8B 4E 08				mov cx,word ptr ss:[bp+8]
+ 0295  83 C1 05				add cx,5
+ 0298  BA 0007				mov dx,7
+ 029B  B4 0C				MOV AH,0CH	;在绘图模式显示一点
+ 029D  B0 00				MOV AL,0	;颜色	
+ 029F  CD 10				INT 10H
+ 02A1  41				inc cx
+ 02A2  B4 0C				MOV AH,0CH	;在绘图模式显示一点
+ 02A4  B0 00				MOV AL,0	;颜色	
+ 02A6  CD 10				INT 10H
+ 02A8  5D				pop bp
+ 02A9  5E				pop si
+ 02AA  5A				pop dx
+ 02AB  59				pop cx
+ 02AC  5B				pop bx
+ 02AD  58				pop ax
+ 02AE  C3				ret
+ 02AF				shoot_plane endp
+
+				;画水平直线
+				;入口参数 CX相当于X0 DX相当于Y0,Y1 si图像长度 BL像素
+
+ 02AF				sp_line proc
+ 02AF  50			         pusH ax
+ 02B0  53			         pusH bx
+ 02B1  B3 02			         MOV BL,2    ;飞机的颜色
+ 02B3  B4 0C			         MOV AH,0cH
+ 02B5  8A C3			         MOV AL,BL
+ 02B7  CD 10			lop:   	 INT 10H
+ 02B9  41			         inc CX
+ 02BA  4E			         dec si
+				         
+ 02BB  75 FA			         jnz lop
+ 02BD  5B			         pop bx
+ 02BE  58			         pop ax
+ 02BF  C3			         ret
+ 02C0				sp_line endp
+				;/////////////////////////////
+
+
+				;画水平直线
+				;入口参数 CX相当于X0 DX相当于Y0,Y1 si图像长度 BL像素
+ 02C0				sp_line1 proc
+ 02C0  50			         pusH ax
+ 02C1  53			         pusH bx
+ 02C2  55			         pusH bp
+ 02C3  57			         pusH di
+ 02C4  8B E9			     	 MOV bp,CX
+				      
+ 02C6  BF 000B			         MOV di,11
+ 02C9  B3 00			         MOV BL,0    ;飞机的颜色 用来擦除原来的飞机
+ 02CB  B4 0C			         MOV AH,0cH
+ 02CD  8A C3			         MOV AL,BL
+ 02CF  CD 10			lop1: 	 INT 10H
+ 02D1  41			         inc CX
+ 02D2  4F			         dec di
+				         
+ 02D3  75 FA			         jnz lop1
+ 02D5  8B CD			         MOV CX,bp
+				         
+ 02D7  5F			         pop di
+ 02D8  5D			         pop bp
+ 02D9  5B			         pop bx
+ 02DA  58			         pop ax
+ 02DB  C3			         ret
+ 02DC				sp_line1 endp
+				;/////////////////////////////
+				        
+
+				;画垂直直线
+				;入口参数 CX相当于X0 DX相当于y0 si图像长度 BL像素
+
+ 02DC				sp_line2 proc
+ 02DC  50			         pusH ax   
+ 02DD  B4 0C			         MOV AH,0cH
+ 02DF  8A C3			         MOV AL,BL
+ 02E1  CD 10			lop6:   INT 10H
+ 02E3  42			         inc dx
+ 02E4  4E			         dec si
+ 02E5  75 FA			         jnz lop6
+ 02E7  58			         pop ax
+ 02E8  C3			         ret
+ 02E9				sp_line2 endp
+				;/////////////////////////////
+
+
+
+
+				;/////////////////延时
+ 02E9				delay proc 
+ 02E9  52				pusH dx
+ 02EA  51				pusH CX
+
+ 02EB  B9 0002				MOV CX,02H
+ 02EE				sleep2:
+ 02EE  BA 02F0				MOV dx,02f0H ;让程序暂停一段时间
+
+ 02F1				sleep1: 
+ 02F1  4A				dec dx
+ 02F2  83 FA 00				CMP dx,0
+ 02F5  75 FA				jne sleep1
+
+ 02F7  49				dec CX
+ 02F8  83 F9 00				CMP CX,0
+ 02FB  75 F1				jne sleep2
+
+ 02FD  59				pop CX
+ 02FE  5A				pop dx
+ 02FF  C3				ret
+ 0300				delay endp
+				;//////////////////
+
+				;/////////////////延时
+ 0300				delay2 proc 
+ 0300  52				push dx
+ 0301  51				push cx
+
+ 0302  B9 0020				MOV CX,20H
+ 0305				sleep4:
+ 0305  BA FFFF				MOV dx,0ffffH ;让程序暂停一段时间
+
+ 0308				sleep3: 
+ 0308  4A				dec dx
+ 0309  83 FA 00				CMP dx,0
+ 030C  75 FA				jne sleep3
+
+ 030E  49				dec CX
+ 030F  83 F9 00				CMP CX,0
+ 0312  75 F1				jne sleep4
+
+ 0314  59				pop cx
+ 0315  5A				pop dx
+ 0316  C3				ret
+ 0317				delay2 endp
+				;//////////////////
+
+ 0317				help_view proc  ;显示开始菜单
+ 0317  E8 0159			     call clearscreen ;清屏
+ 031A  B4 02				 mov ah,02
+ 031C  B7 00				 mov bh,00
+ 031E  B6 04				 mov dh,04
+ 0320  B2 17				 mov dl,23
+ 0322  CD 10				 int 10h
+ 0324  B4 09				 mov ah,09
+ 0326  BA 0034 R			 mov dx,offset message_welcome
+ 0329  CD 21				 int 21h	 
+ 032B  B4 02				 mov ah,02
+ 032D  B7 00				 mov bh,00
+ 032F  B6 06				 mov dh,06
+ 0331  B2 17				 mov dl,23
+ 0333  CD 10				 int 10h
+ 0335  B4 09				 mov ah,09
+ 0337  BA 005C R			 mov dx,offset message_operation
+ 033A  CD 21				 int 21h	 
+ 033C  B4 02				 mov ah,02
+ 033E  B7 00				 mov bh,00
+ 0340  B6 08				 mov dh,08
+ 0342  B2 17				 mov dl,23
+ 0344  CD 10				 int 10h
+ 0346  B4 09				 mov ah,09
+ 0348  BA 0069 R			 mov dx,offset message_operation1
+ 034B  CD 21				 int 21h	 
+ 034D  B4 02				  mov ah,02
+ 034F  B7 00				 mov bh,00
+ 0351  B6 0A				  mov dh,10
+ 0353  B2 17				 mov dl,23
+ 0355  CD 10				 int 10h
+ 0357  B4 09				 mov ah,09
+ 0359  BA 0085 R			 mov dx,offset message_operation2
+ 035C  CD 21				 int 21h	 
+ 035E  B4 02				  mov ah,02
+ 0360  B7 00				 mov bh,00
+ 0362  B6 0C				  mov dh,12
+ 0364  B2 17				 mov dl,23
+ 0366  CD 10				 int 10h
+ 0368  B4 09				 mov ah,09
+ 036A  BA 0095 R			 mov dx,offset message_operation3
+ 036D  CD 21				 int 21h
+ 036F  B4 02				  mov ah,02
+ 0371  B7 00				 mov bh,00
+ 0373  B6 0E				  mov dh,14
+ 0375  B2 17				 mov dl,23
+ 0377  CD 10				 int 10h
+ 0379  B4 09				 mov ah,09
+ 037B  BA 00C1 R			 mov dx,offset message_operation4
+ 037E  CD 21				 int 21h
+ 0380  B4 02				  mov ah,02
+ 0382  B7 00				 mov bh,00
+ 0384  B6 10				  mov dh,16
+ 0386  B2 17				 mov dl,23
+ 0388  CD 10				 int 10h
+ 038A  B4 09				 mov ah,09
+ 038C  BA 00CE R			 mov dx,offset start_button
+ 038F  CD 21				 int 21h
+ 0391  B4 02				  mov ah,02
+ 0393  B7 00				 mov bh,00
+ 0395  B6 12				  mov dh,18
+ 0397  B2 17				 mov dl,23
+ 0399  CD 10				 int 10h
+ 039B  B4 09				 mov ah,09
+ 039D  BA 00EE R			 mov dx,offset end_button
+ 03A0  CD 21				 int 21h 
+ 03A2  B4 02				  mov ah,02
+ 03A4  B7 00				 mov bh,00
+ 03A6  B6 14				  mov dh,20
+ 03A8  B2 17				 mov dl,23
+ 03AA  CD 10				 int 10h
+ 03AC  B4 09				 mov ah,09
+ 03AE  BA 0115 R			 mov dx,offset message_end
+ 03B1  CD 21				 int 21h
+					 ;检查是否有键被按下
+ 03B3				checkbutton:
+ 03B3  B4 01				 mov ah,01
+ 03B5  CD 16				 int 16h
+ 03B7  74 FA				 jz checkbutton
+ 03B9  B4 00				 mov ah,0
+ 03BB  CD 16				 int 16h
+ 03BD  80 FC 1C				 cmp ah,1ch;回车键
+ 03C0  74 0A				 je startthegame
+ 03C2  80 FC 01				 cmp ah,01h;Esc键
+ 03C5  75 03 E9 00E6			 je endthegame
+ 03CA  EB E7				 jmp checkbutton
+ 03CC				startthegame:
+ 03CC  E8 00A4			     call clearscreen ;清屏
+ 03CF  C3				 ret
+ 03D0				help_view endp
+				;-------------------------------------------------------------------
+
+ 03D0				choose_view proc  ;显示难度选择菜单
+ 03D0  B4 02				 mov ah,02
+ 03D2  B7 00				 mov bh,00
+ 03D4  B6 04				 mov dh,04
+ 03D6  B2 17				 mov dl,23
+ 03D8  CD 10				 int 10h
+ 03DA  B4 09				 mov ah,09
+ 03DC  BA 013D R			 mov dx,offset message_easy
+ 03DF  CD 21				 int 21h	 
+ 03E1  B4 02				 mov ah,02
+ 03E3  B7 00				 mov bh,00
+ 03E5  B6 06				 mov dh,06
+ 03E7  B2 17				 mov dl,23
+ 03E9  CD 10				 int 10h
+ 03EB  B4 09				 mov ah,09
+ 03ED  BA 0144 R			 mov dx,offset message_mid
+ 03F0  CD 21				 int 21h	 
+ 03F2  B4 02				 mov ah,02
+ 03F4  B7 00				 mov bh,00
+ 03F6  B6 08				 mov dh,08
+ 03F8  B2 17				 mov dl,23
+ 03FA  CD 10				 int 10h
+ 03FC  B4 09				 mov ah,09
+ 03FE  BA 014D R			 mov dx,offset message_hard
+ 0401  CD 21				 int 21h	 
+ 0403  B4 02				  mov ah,02
+ 0405  B7 00				 mov bh,00
+ 0407  B6 0A				  mov dh,10
+ 0409  B2 17				 mov dl,23
+ 040B  CD 10				 int 10h
+ 040D  B4 09				 mov ah,09
+ 040F  BA 0154 R			 mov dx,offset message_veryhard
+ 0412  CD 21				 int 21h
+ 0414  B4 02				  mov ah,02
+ 0416  B7 00				 mov bh,00
+ 0418  B6 0C				  mov dh,12
+ 041A  B2 17				 mov dl,23
+ 041C  CD 10				 int 10h
+ 041E  B4 09				 mov ah,09
+ 0420  BA 015F R			 mov dx,offset message_choose
+ 0423  CD 21				 int 21h	 
+					 ;检查是否有键被按下
+ 0425				checkbutton2:
+ 0425  B4 01				 mov ah,01
+ 0427  CD 16				 int 16h
+ 0429  74 FA				 jz checkbutton2
+ 042B  B4 00				 mov ah,0
+ 042D  CD 16				 int 16h
+ 042F  3C 31				 cmp al,'1'
+ 0431  74 0E				 je easy
+ 0433  3C 32				 cmp al,'2'
+ 0435  74 1B				 je middle
+ 0437  3C 33				 cmp al,'3'
+ 0439  74 28				 je hard
+ 043B  3C 34				 cmp al,'4'
+ 043D  74 2B				 je veryhard
+ 043F  EB E4				 jmp checkbutton2
+
+ 0441				easy:
+ 0441  C6 06 0010 R 00			mov byte ptr [smile_pos+12],0
+ 0446  C6 06 0011 R 00			mov byte ptr [smile_pos+13],0
+ 044B  C6 06 0022 R 12			mov byte ptr [timecontrol],18
+ 0450  EB 1D				jmp sta
+ 0452				middle:
+ 0452  C6 06 0016 R 00			mov byte ptr [smile_pos+18],0
+ 0457  C6 06 0017 R 00			mov byte ptr [smile_pos+19],0	 
+ 045C  C6 06 0022 R 0F			mov byte ptr [timecontrol],15 
+ 0461  EB 0C				jmp sta
+ 0463				hard:
+ 0463  C6 06 0022 R 0B			mov byte ptr [timecontrol],11 
+ 0468  EB 05				jmp sta
+ 046A				veryhard:
+ 046A  C6 06 0022 R 02			mov byte ptr [timecontrol],2
+ 046F				sta:    
+ 046F  E8 0001				call clearscreen ;清屏
+ 0472  C3				ret
+ 0473				choose_view endp
+				;-------------------------------------------------------------------
+
+
+
+				;-------------------------------------------------------------------
+ 0473				clearscreen proc;清屏
+ 0473  50				push ax
+ 0474  53				push bx
+ 0475  51				push cx
+ 0476  52				push dx
+ 0477  B4 06				mov ah,06
+ 0479  B0 00				mov al,00
+ 047B  B7 07				mov bh,07
+ 047D  B5 00				mov ch,00
+ 047F  B1 00				mov cl,00
+ 0481  B6 18				mov dh,24
+ 0483  B2 4F				mov dl,79
+ 0485  CD 10				int 10h
+ 0487  5A				pop dx
+ 0488  59				pop cx
+ 0489  5B				pop bx
+ 048A  58				pop ax
+ 048B  C3				ret
+ 048C				clearscreen endp
+				;----------------------------------------------------------------------
+				;-----------------------------------------------------------------------
+ 048C				b2asc proc ;二进制码转化为ascii码
+ 048C  9C				pushf
+ 048D  53				push bx
+ 048E  52				push dx
+ 048F  BB 000A				mov bx,10
+ 0492  C6 04 30				mov byte ptr [si],'0'
+ 0495  46				inc si
+ 0496  C6 04 30				mov byte ptr [si],'0'
+ 0499  46				inc si
+ 049A  C6 04 30				mov byte ptr [si],'0'
+					;add si,2 ;这个视有几个ASCII码而定，显示三位时定为二
+ 049D				 b2a_loop:
+ 049D  33 D2			     xor dx,dx
+ 049F  F7 F3			     div bx
+ 04A1  83 CA 30			     or dx,30h
+ 04A4  88 14			     mov [si],dl
+ 04A6  4E			     dec si
+ 04A7  83 F8 00			     cmp ax,0
+ 04AA  77 F1			     ja b2a_loop
+ 04AC  5A			     pop dx
+ 04AD  5B			     pop bx
+ 04AE  9D			     popf
+ 04AF  C3			     ret
+ 04B0				b2asc endp
+
+
+ 04B0				endthegame:
+ 04B0  E8 FE4D				 call delay2
+ 04B3  B4 00				 mov ah,00
+ 04B5  B0 00				 mov al,00
+ 04B7  CD 10				 int 10h
+ 04B9  E8 FFB7				 call clearscreen ;清屏
+ 04BC  B4 02				 mov ah,02
+ 04BE  B7 00				 mov bh,00
+ 04C0  B6 09				 mov dh,9
+ 04C2  B2 06				 mov dl,6
+ 04C4  CD 10				 int 10h
+ 04C6  B4 09				 mov ah,09
+ 04C8  BA 016E R			 mov dx,offset message_over1
+ 04CB  CD 21				 int 21h	 
+ 04CD  B4 02				 mov ah,02
+ 04CF  B7 00				 mov bh,00
+ 04D1  B6 0B				 mov dh,11
+ 04D3  B2 06				 mov dl,6
+ 04D5  CD 10				 int 10h
+ 04D7  B4 09				 mov ah,09
+ 04D9  BA 018B R			 mov dx,offset message_over2
+ 04DC  CD 21				 int 21h	 
+ 04DE  B4 02				 mov ah,02
+ 04E0  B7 00				 mov bh,00
+ 04E2  B6 0D				 mov dh,13
+ 04E4  B2 06				 mov dl,6
+ 04E6  CD 10				 int 10h
+ 04E8  B4 09				 mov ah,09
+ 04EA  BA 01A8 R			 mov dx,offset message_over3
+ 04ED  CD 21				 int 21h	 
+
+
+ 04EF				CODES ends
+				end START
+Microsoft (R) Macro Assembler Version 6.15.8803		    11/13/17 11:09:57
+refer.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+codes  . . . . . . . . . . . . .	16 Bit	 04EF	  Para	  Private 
+datas  . . . . . . . . . . . . .	16 Bit	 01C5	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+b2asc  . . . . . . . . . . . . .	P Near	 048C	  codes	Length= 0024 Public
+  b2a_loop . . . . . . . . . . .	L Near	 049D	  codes	
+choose_view  . . . . . . . . . .	P Near	 03D0	  codes	Length= 00A3 Public
+  checkbutton2 . . . . . . . . .	L Near	 0425	  codes	
+  easy . . . . . . . . . . . . .	L Near	 0441	  codes	
+  middle . . . . . . . . . . . .	L Near	 0452	  codes	
+  hard . . . . . . . . . . . . .	L Near	 0463	  codes	
+  veryhard . . . . . . . . . . .	L Near	 046A	  codes	
+  sta  . . . . . . . . . . . . .	L Near	 046F	  codes	
+clearscreen  . . . . . . . . . .	P Near	 0473	  codes	Length= 0019 Public
+delay2 . . . . . . . . . . . . .	P Near	 0300	  codes	Length= 0017 Public
+  sleep4 . . . . . . . . . . . .	L Near	 0305	  codes	
+  sleep3 . . . . . . . . . . . .	L Near	 0308	  codes	
+delay  . . . . . . . . . . . . .	P Near	 02E9	  codes	Length= 0017 Public
+  sleep2 . . . . . . . . . . . .	L Near	 02EE	  codes	
+  sleep1 . . . . . . . . . . . .	L Near	 02F1	  codes	
+help_view  . . . . . . . . . . .	P Near	 0317	  codes	Length= 00B9 Public
+  checkbutton  . . . . . . . . .	L Near	 03B3	  codes	
+  startthegame . . . . . . . . .	L Near	 03CC	  codes	
+move_smile . . . . . . . . . . .	P Near	 014E	  codes	Length= 0091 Public
+  erase_smile  . . . . . . . . .	L Near	 015B	  codes	
+  row  . . . . . . . . . . . . .	L Near	 0187	  codes	
+  notexit  . . . . . . . . . . .	L Near	 0195	  codes	
+  goon . . . . . . . . . . . . .	L Near	 01CF	  codes	
+play_plane1  . . . . . . . . . .	P Near	 0106	  codes	Length= 0016 Public
+  lop5 . . . . . . . . . . . . .	L Near	 010F	  codes	
+play_plane . . . . . . . . . . .	P Near	 00C8	  codes	Length= 003E Public
+  play_plane_1 . . . . . . . . .	L Near	 00D0	  codes	
+  sk . . . . . . . . . . . . . .	L Near	 00D0	  codes	
+  lop2 . . . . . . . . . . . . .	L Near	 00D9	  codes	
+play_smile . . . . . . . . . . .	P Near	 011C	  codes	Length= 0032 Public
+  show_smile . . . . . . . . . .	L Near	 0129	  codes	
+shoot_plane  . . . . . . . . . .	P Near	 01DF	  codes	Length= 00D0 Public
+  lop7 . . . . . . . . . . . . .	L Near	 01F1	  codes	
+  lop8 . . . . . . . . . . . . .	L Near	 0202	  codes	
+  same . . . . . . . . . . . . .	L Near	 020E	  codes	
+  next . . . . . . . . . . . . .	L Near	 023E	  codes	
+  a0 . . . . . . . . . . . . . .	L Near	 023F	  codes	
+  a1 . . . . . . . . . . . . . .	L Near	 0243	  codes	
+  a2 . . . . . . . . . . . . . .	L Near	 0254	  codes	
+  notdes . . . . . . . . . . . .	L Near	 0290	  codes	
+sp_line1 . . . . . . . . . . . .	P Near	 02C0	  codes	Length= 001C Public
+  lop1 . . . . . . . . . . . . .	L Near	 02CF	  codes	
+sp_line2 . . . . . . . . . . . .	P Near	 02DC	  codes	Length= 000D Public
+  lop6 . . . . . . . . . . . . .	L Near	 02E1	  codes	
+sp_line  . . . . . . . . . . . .	P Near	 02AF	  codes	Length= 0011 Public
+  lop  . . . . . . . . . . . . .	L Near	 02B7	  codes	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+Timer  . . . . . . . . . . . . .	L Near	 00A5	  codes	
+again  . . . . . . . . . . . . .	L Near	 005E	  codes	
+delay_timer  . . . . . . . . . .	Byte	 0021	  datas	
+destroy  . . . . . . . . . . . .	Byte	 0020	  datas	
+down . . . . . . . . . . . . . .	L Near	 008D	  codes	
+end_button . . . . . . . . . . .	Byte	 00EE	  datas	
+endthegame . . . . . . . . . . .	L Near	 04B0	  codes	
+goout  . . . . . . . . . . . . .	L Near	 00BB	  codes	
+left . . . . . . . . . . . . . .	L Near	 0092	  codes	
+lop3 . . . . . . . . . . . . . .	L Near	 0054	  codes	
+message_choose . . . . . . . . .	Byte	 015F	  datas	
+message_easy . . . . . . . . . .	Byte	 013D	  datas	
+message_end  . . . . . . . . . .	Byte	 0115	  datas	
+message_hard . . . . . . . . . .	Byte	 014D	  datas	
+message_mid  . . . . . . . . . .	Byte	 0144	  datas	
+message_operation1 . . . . . . .	Byte	 0069	  datas	
+message_operation2 . . . . . . .	Byte	 0085	  datas	
+message_operation3 . . . . . . .	Byte	 0095	  datas	
+message_operation4 . . . . . . .	Byte	 00C1	  datas	
+message_operation  . . . . . . .	Byte	 005C	  datas	
+message_over1  . . . . . . . . .	Byte	 016E	  datas	
+message_over2  . . . . . . . . .	Byte	 018B	  datas	
+message_over3  . . . . . . . . .	Byte	 01A8	  datas	
+message_veryhard . . . . . . . .	Byte	 0154	  datas	
+message_welcome  . . . . . . . .	Byte	 0034	  datas	
+message  . . . . . . . . . . . .	Byte	 0023	  datas	
+plane_pos  . . . . . . . . . . .	Word	 0000	  datas	
+quite  . . . . . . . . . . . . .	L Near	 00A1	  codes	
+right  . . . . . . . . . . . . .	L Near	 0097	  codes	
+score_b  . . . . . . . . . . . .	Byte	 0033	  datas	
+score  . . . . . . . . . . . . .	Byte	 002F	  datas	
+shoot  . . . . . . . . . . . . .	L Near	 009C	  codes	
+smile_pos  . . . . . . . . . . .	Byte	 0004	  datas	
+start_button . . . . . . . . . .	Byte	 00CE	  datas	
+start  . . . . . . . . . . . . .	L Near	 0000	  codes	
+timecontrol  . . . . . . . . . .	Byte	 0022	  datas	
+up . . . . . . . . . . . . . . .	L Near	 0088	  codes	
+
+	   1 Warnings
+	   1 Errors

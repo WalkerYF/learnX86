@@ -1,0 +1,6 @@
+https://en.wikipedia.org/wiki/INT_10H
+
+http://blog.csdn.net/jiange_zh/article/details/47394337
+
+调用过程的时候，负责传入参数的寄存器可能会改变
+所以在调用过程的时候需要小心。
