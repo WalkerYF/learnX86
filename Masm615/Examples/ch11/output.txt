@@ -1,3 +1,0 @@
-This text is written to an output file.
-This text is appended to an output file.
-This text is appended to an output file.
