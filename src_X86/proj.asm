@@ -1,10 +1,13 @@
-; 我要写什么项目呢？
 assume cs:code,ss:stack,ds:data
 data segment
     plane_pos dw 0,0
-    enemy_pos dw 0,0
+    enemy_pos dw 89,45
+    all_enemy_pos dw 123,67,23,34,7,34,67,34,110,34,67,34,156,34,150, 34
+    enemy_life dw 0
+    delay_timer dw 0
+    timecontrol dw 36
+    score db '0','$'
     message_score db 'score:','$'
-    message_life db 'your life:','$'
 data ends
 
 
@@ -14,10 +17,23 @@ stack ends
 
 code segment
 start:
+    mov al,34h   ; 设控制字值 
+    out 43h,al   ; 写控制字到控制字寄存器 
+    mov ax,0ffffh ; 中断时间设置
+    out 40h,al   ; 写计数器 0 的低字节 
+    mov al,ah    ; AL=AH 
+    out 40h,al   ; 写计数器 0 的高字节 
+    mov ax, 0
+    mov ds, ax
+    mov ax, cs
+    mov word ptr ds:[4*8],offset myint8 ; 设置偏移地址为子过程所在位置
+    mov word ptr ds:[4*8+2], ax ; 设置段地址为cs
+
     mov ax, data
     mov ds, ax
     mov ax, stack
     mov ss, ax
+
 
     mov ah, 00h  ; 设置显示方式为320*200彩色图形方式,一个一个像素点描
     mov al, 04h
@@ -28,20 +44,20 @@ start:
     mov bh,0
     mov dh,0
     mov dl,0
-    int 10
+    int 10h
     mov dx,offset message_score; 显示分数信息
     mov ah, 09h
     int 21h
 
-    ; 显示生命值
-    mov ah,02h;改变光标位置
-    mov bh,0
-    mov dh,10
-    mov dl,0
-    int 10
-    mov dx,offset message_life; 显示生命信息
-    mov ah, 09h
-    int 21h
+    ; ; 显示生命值
+    ; mov ah,02h;改变光标位置
+    ; mov bh,0
+    ; mov dh,10
+    ; mov dl,0
+    ; int 10
+    ; mov dx,offset message_life; 显示生命信息
+    ; mov ah, 09h
+    ; int 21h
 
     mov bx, 150
     mov bp, 180
@@ -102,6 +118,48 @@ quit:
 
 
 
+;-----------测试int8------------------------
+myint8:
+	push ax
+    push cx
+    push dx
+    push si
+	mov al,byte ptr ds:[timecontrol]
+	cmp byte ptr ds:[delay_timer],al
+	; pop ax
+	jnz	goout
+	mov byte ptr ds:[delay_timer],0
+
+    cmp byte ptr ds:[enemy_life], 0; 如果敌人不存在，就生成敌人，否则移动敌人
+    je  generate
+	call move_enemy
+    jmp goout
+generate:
+	call play_enemy_g
+goout:
+	inc byte ptr [delay_timer]
+	; push ax
+	mov al,20h			; AL = EOI
+	out 20h,al			; 发送EOI到主8529A
+	out 0A0h,al			; 发送EOI到从8529A
+
+    mov ah,02h;改变光标位置
+    mov bh,0
+    mov dh,0
+    mov dl,7
+    int 10h
+    mov dx,offset score  
+    mov ah, 09h
+    int 21h
+
+    pop si
+    pop dx
+    pop cx
+	pop ax
+	iret			; 从中断返回
+
+
+
 ;----------------子过程:画水平直线------------------------
 ;cx: 水平直线起始点坐标x
 ;dx: 水平直线起始点坐标y
@@ -111,7 +169,7 @@ sp_line proc
          push ax  
          push bx  
 
-         mov al,3  ; 设置线条颜色 
+         mov al,1  ; 设置线条颜色 
          mov ah,0ch  
 ; ah(0c); int 10h:
 ; AL = Color, BH = Page Number, CX = x, DX = y
@@ -332,10 +390,21 @@ begin_shoot:; 发射一列炮弹
     dec dx
     jmp begin_shoot
 
-; 炮弹已发射，判断分数及退出
 end_shooting:
+    ; 当前敌人位置：ds:[enemy_pos]
     call delay
+    
+    mov bx, cx
+    cmp bx, ds:[enemy_pos]
+    jb erase_shoot
+    sub bx, 11
+    cmp bx, ds:[enemy_pos]
+    ja erase_shoot
+    mov ds:[enemy_life], 0 ; 没有跳，说明炮弹击中敌机
+    call play_enemy_b
+    add ds:[score], 1 ; 增加一分
 ;擦除炮弹轨迹
+erase_shoot:
     mov cx, ds:[plane_pos]
     add cx, 5
     mov dx, ds:[plane_pos+2]
@@ -356,8 +425,11 @@ shoot_ret:
 shoot_plane endp
 
 
-; ------------------------- 敌人 ------------------
 
+; ------------------------- 生成敌人 ------------------
+; 6行11列
+;bx:敌人矩形左上角坐标x
+;bp:敌人矩形左上角坐标y
 ; 开始生成敌人
 
 ; 读取状态，只要还存活就不断循环向下，并且更新在存储区中的位置，一旦挂掉就执行下面的语句（这里是一个小循环）
@@ -365,13 +437,192 @@ shoot_plane endp
 
 ; 擦除原来的敌人，回到第一条，生成新的敌人，继续 
 
+play_enemy_g proc
+    push cx
+    push dx
+    push es
+    push si
+    push di
+    push ax
+    jmp sk2_g
+
+    play_enemy_1_g: dw 1,1,2,10,1,2,2,2,2,9,2,2,3,3,2,8,3,2,4,4,5,5,5,3,6,6,1
+    ; 27*2个字节
+    ; x,y,长度
+
+sk2_g:
+    mov cx, ax
+    mov ax, cs
+    mov es, ax
+    mov di, 0
+    mov byte ptr ds:[enemy_life], 1 ; 加一个标记，表示敌人已生成
+    ; (bx, bp)
+
+    call random
+    mov si, ax 
+    add si, si
+
+    ;随机数生成存在si中
+    mov bx, ds:[all_enemy_pos+si]
+    mov bp, ds:[all_enemy_pos+si+2]
+    mov ds:[enemy_pos], bx
+    mov ds:[enemy_pos+2], bp
+draw_loop2_g:
+    mov cx, word ptr es:[play_enemy_1+di]
+    add cx, bx ;(x)
+    mov dx, word ptr es:[play_enemy_1+di+2]
+    add dx, bp ;(y)
+    mov si, word ptr es:[play_enemy_1+di+4]
+
+    call sp_line; 画一条线
+    add di, 6 ; 下一条线
+    cmp di, 54
+    jne draw_loop2_g
+
+
+
+    pop ax
+    pop di
+    pop si
+    pop es
+    pop dx
+    pop cx
+    ret
+play_enemy_g endp
+
+
+
+; -------------------------打印敌人 ------------------
+; 6行11列
+;bx:敌人矩形左上角坐标x
+;bp:敌人矩形左上角坐标y
+; 开始生成敌人
+
+; 读取状态，只要还存活就不断循环向下，并且更新在存储区中的位置，一旦挂掉就执行下面的语句（这里是一个小循环）
+; 或者y一旦超出了200，就将score减少，hp减少，同样执行下面的语句
+
+; 擦除原来的敌人，回到第一条，生成新的敌人，继续 
+
+play_enemy proc
+    push cx
+    push dx
+    push es
+    push si
+    push di
+    push ax
+    jmp sk2
+
+    play_enemy_1: dw 1,1,2,10,1,2,2,2,2,9,2,2,3,3,2,8,3,2,4,4,5,5,5,3,6,6,1
+    ; 27*2个字节
+    ; x,y,长度
+
+sk2:
+    mov cx, ax
+    mov ax, cs
+    mov es, ax
+    mov di, 0
+    mov byte ptr ds:[enemy_life], 1 ; 加一个标记，表示敌人已生成
+    ; (bx, bp)
+    mov bx, ds:[enemy_pos]
+    mov bp, ds:[enemy_pos+2]
+draw_loop2:
+    mov cx, word ptr es:[play_enemy_1+di]
+    add cx, bx ;(x)
+    mov dx, word ptr es:[play_enemy_1+di+2]
+    add dx, bp ;(y)
+    mov si, word ptr es:[play_enemy_1+di+4]
+
+    call sp_line; 画一条线
+    add di, 6 ; 下一条线
+    cmp di, 54
+    jne draw_loop2
+
+
+
+    pop ax
+    pop di
+    pop si
+    pop es
+    pop dx
+    pop cx
+    ret
+play_enemy endp
+
+; ----------------------擦除飞机-------------------
+play_enemy_b proc
+    push cx
+    push dx
+    push es
+    push si
+    push di
+    push ax
+    jmp sk2_b
+
+    play_enemy_1_b: dw 1,1,2,10,1,2,2,2,2,9,2,2,3,3,2,8,3,2,4,4,5,5,5,3,6,6,1
+    ; 27*2个字节
+    ; x,y,长度
+
+sk2_b:
+    mov cx, ax
+    mov ax, cs
+    mov es, ax
+    mov di, 0
+    ; mov byte ptr ds:[enemy_life], 0
+    ; (bx, bp)
+    mov bx, ds:[enemy_pos]
+    mov bp, ds:[enemy_pos+2]
+draw_loop2_b:
+    mov cx, word ptr es:[play_enemy_1_b+di]
+    add cx, bx ;(x)
+    mov dx, word ptr es:[play_enemy_1_b+di+2]
+    add dx, bp ;(y)
+    mov si, word ptr es:[play_enemy_1_b+di+4]
+
+    call sp_line_b; 画一条线
+    add di, 6 ; 下一条线
+    cmp di, 54
+    jne draw_loop2_b
+
+    pop ax
+    pop di
+    pop si
+    pop es
+    pop dx
+    pop cx
+    ret
+play_enemy_b endp
+
+;----------------移动敌人-----------------------------
+; 向下移动两格
+move_enemy proc
+    push ax
+    call play_enemy_b  ; 擦除飞机
+
+    cmp ds:[enemy_life], 0  ; 查看飞机状态，若死亡则跳过
+    je move_enemy_end
+
+    cmp ds:[enemy_pos+2], 180
+    ja move_enemy_end
+
+    add ds:[enemy_pos+2], 5
+    call play_enemy
+
+move_enemy_end:
+    pop ax
+    ret
+
+dead_enemy_end:
+    mov ds:[enemy_life], 0
+    pop ax
+    ret
+move_enemy endp
 
 ;----------------延时------------------------
 delay proc 
 	push dx
 	push cx
 
-	mov cx,00a0h
+	mov cx,01a0h
 sleep2:
 	mov dx,0ff0h ;让程序暂停一段时间
 
@@ -391,6 +642,31 @@ delay endp
 ;----------------延时------------------------
 
 
+;-------------随机数---------------
+; 生成0~7的随机数
+; 保存在al中
+; 警告！会修改ax
+random proc
+    push bx
 
+    mov ax, 0h;间隔定时器
+    out 43h, al;通过端口43h
+    in al, 40h;
+    in al, 40h;
+    in al, 40h;访问3次，保证随机性
+    inc al
+
+    ;如果对范围并不需要精确，可以直接与运算来获得，
+    ;否则，用div取余
+    mov bl, 8
+    div bl 
+
+    mov al, ah
+    mov ah, 0;此时ax的值就是0~18的
+
+    pop bx
+    ret
+
+random endp
 code ends
 end start
