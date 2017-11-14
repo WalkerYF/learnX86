@@ -49,6 +49,7 @@ start:
 	mov word ptr ds:[20h],offset Timer	; 设置时钟中断向量的偏移地址
 	mov ax,cs 
 	mov word ptr ds:[22h],ax		; 设置时钟中断向量的段地址=CS
+	; 将中断向量[8]设置为cs:offset timer
 		   
 	mov ax,datas
 	mov ds,ax  
